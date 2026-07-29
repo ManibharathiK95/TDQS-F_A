@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDQS - Accounts and Finance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <i class="fas fa-hard-hat"></i>
+            <span>THULIR FZE</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+            <a class="nav-item" href="projects.html"><i class="fas fa-building"></i><span>Projects</span></a>
+            <a class="nav-item" href="contractors.html"><i class="fas fa-user-hard-hat"></i><span>Contractors</span></a>
+            <a class="nav-item" href="vendors.html"><i class="fas fa-truck"></i><span>Vendors</span></a>
+            <a class="nav-item" href="quotations.html"><i class="fas fa-file-alt"></i><span>Quotations</span></a>
+            <a class="nav-item" href="invoices.html"><i class="fas fa-file-invoice-dollar"></i><span>Invoices</span></a>
+            <a class="nav-item" href="payments.html"><i class="fas fa-money-check-alt"></i><span>Payments</span></a>
+            <a class="nav-item" href="receipts.html"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+            <a class="nav-item" href="expenses.html"><i class="fas fa-credit-card"></i><span>Expenses</span></a>
+            <a class="nav-item" href="reports.html"><i class="fas fa-chart-pie"></i><span>Reports</span></a>
+            <a class="nav-item" href="documents.html"><i class="fas fa-folder-open"></i><span>Documents</span></a>
+            <a class="nav-item" href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+        </nav>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+                <div class="header-title">
+                    <h1>TDQS - Accounts and Finance</h1>
+                    <p>Thulir Design & QS Services FZE</p>
+                </div>
+            </div>
+            <div class="header-center">
+                <input type="text" class="search-bar" placeholder="Search transactions, projects...">
+            </div>
+            <div class="header-right">
+                <span class="header-date" id="currentDate"></span>
+                <div class="profile-icon">TD</div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="tabs-container">
+                <button class="tab-btn active" data-tab="overview">Overview</button>
+                <button class="tab-btn" data-tab="projects">Projects</button>
+                <button class="tab-btn" data-tab="financials">Financials</button>
+            </div>
+
+            <!-- OVERVIEW -->
+            <div class="tab-content active" id="tab-overview">
+                <div class="kpi-grid">
+                    <div class="card kpi-card">
+                        <div class="kpi-title">Revenue This Month</div>
+                        <div class="kpi-value" id="kpiRevenue"></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-title">Expenses This Month</div>
+                        <div class="kpi-value" id="kpiExpenses"></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-title">Net Profit</div>
+                        <div class="kpi-value" id="kpiProfit" style="color:var(--forest-green);"></div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-title">Cash Available</div>
+                        <div class="kpi-value" id="kpiCash"></div>
+                    </div>
+                </div>
+
+                <div class="kpi-sub">
+                    <span style="font-size:13px;color:var(--gray-500);">Financial Breakdown</span>
+                    <button class="expand-btn" id="expandKpi">Show Details <i class="fas fa-chevron-down"></i></button>
+                </div>
+
+                <div class="sub-kpi-container" id="subKpiContainer">
+                    <div class="sub-kpi-grid">
+                        <div class="sub-kpi-card">
+                            <div class="sub-kpi-title">Outstanding Revenue</div>
+                            <div class="sub-kpi-value" id="subOutRev"></div>
+                        </div>
+                        <div class="sub-kpi-card">
+                            <div class="sub-kpi-title">Outstanding Receivable</div>
+                            <div class="sub-kpi-value" id="subOutRecv"></div>
+                        </div>
+                        <div class="sub-kpi-card">
+                            <div class="sub-kpi-title">Outstanding Payable</div>
+                            <div class="sub-kpi-value" id="subOutPay"></div>
+                        </div>
+                        <div class="sub-kpi-card">
+                            <div class="sub-kpi-title">Cash Balance</div>
+                            <div class="sub-kpi-value" id="subCashBal"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-col-grid">
+                    <div class="card cash-flow-card">
+                        <div class="section-title">Current Month Cash Flow</div>
+                        <div class="cf-flow">
+                            <div class="cf-step"><span>Opening</span><span id="cfOpening"></span></div>
+                            <div class="cf-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="cf-step positive"><span>+ Received</span><span id="cfReceived"></span></div>
+                            <div class="cf-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="cf-step negative"><span>- Vendors</span><span id="cfVendors"></span></div>
+                            <div class="cf-arrow"><i class="fas fa-arrow-right"></i></div>
+                            <div class="cf-step negative"><span>- Expenses</span><span id="cfExpenses"></span></div>
+                            <div class="cf-arrow"><i class="fas fa-equals"></i></div>
+                            <div class="cf-step result"><span>Closing</span><span id="cfClosing"></span></div>
+                        </div>
+                    </div>
+                    <div class="card timeline-card">
+                        <div class="section-title">Recent Activities</div>
+                        <div class="timeline" id="timeline"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="section-title">Monthly Revenue (FY 2025-26)</div>
+                    <div class="chart-summary" id="chartSummary"></div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROJECTS TAB -->
+            <div class="tab-content" id="tab-projects">
+                <div class="card">
+                    <div class="section-title">Project Tracking</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Project Name</th>
+                                    <th>Contractor</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                    <th>Value (AED)</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FINANCIALS TAB -->
+            <div class="tab-content" id="tab-financials">
+                <div class="card">
+                    <div class="section-title">Outstanding Summary</div>
+                    <div class="toggle-container">
+                        <button class="toggle-btn active" data-target="receivable">Receivable</button>
+                        <button class="toggle-btn" data-target="payable">Payable</button>
+                    </div>
+                    <div class="toggle-content active" id="toggle-receivable">
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Contractor Name</th><th style="text-align:right;">Outstanding Amount (AED)</th></tr></thead>
+                                <tbody id="recvTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="toggle-content" id="toggle-payable">
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Vendor Name</th><th style="text-align:right;">Outstanding Amount (AED)</th></tr></thead>
+                                <tbody id="payTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <button class="fab" id="fabBtn"><i class="fas fa-plus"></i></button>
+    <div class="fab-menu" id="fabMenu">
+        <div class="fab-group-title">Financial</div>
+        <button class="fab-action-btn" onclick="location.href='payments.html'"><i class="fas fa-hand-holding-usd"></i> Payment Received</button>
+        <button class="fab-action-btn" onclick="location.href='payments.html'"><i class="fas fa-money-bill-wave"></i> Pay Vendor</button>
+        <button class="fab-action-btn" onclick="location.href='invoices.html'"><i class="fas fa-file-invoice-dollar"></i> New Invoice</button>
+        <button class="fab-action-btn" onclick="location.href='receipts.html'"><i class="fas fa-receipt"></i> New Receipt</button>
+        <div class="fab-group-title">Operations</div>
+        <button class="fab-action-btn" onclick="location.href='quotations.html'"><i class="fas fa-file-alt"></i> New Quote</button>
+        <button class="fab-action-btn" onclick="location.href='projects.html'"><i class="fas fa-building"></i> Add Project</button>
+        <div class="fab-group-title">People</div>
+        <button class="fab-action-btn" onclick="location.href='contractors.html'"><i class="fas fa-user-hard-hat"></i> Add Contractor</button>
+        <button class="fab-action-btn" onclick="location.href='vendors.html'"><i class="fas fa-truck"></i> Add Vendor</button>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/charts.js"></script>
+    <script>
+        // ── RENDER DASHBOARD FROM DATA ──
+        (function renderDashboard() {
+            const d = APP_DATA;
+
+            // KPIs
+            document.getElementById('kpiRevenue').textContent = formatAED(d.kpi.revenue);
+            document.getElementById('kpiExpenses').textContent = formatAED(d.kpi.expenses);
+            document.getElementById('kpiProfit').textContent = formatAED(d.kpi.netProfit);
+            document.getElementById('kpiCash').textContent = formatAED(d.kpi.cashAvailable);
+
+            // Sub KPIs
+            document.getElementById('subOutRev').textContent = formatAED(d.kpi.outstandingRevenue);
+            document.getElementById('subOutRecv').textContent = formatAED(d.kpi.outstandingReceivable);
+            document.getElementById('subOutPay').textContent = formatAED(d.kpi.outstandingPayable);
+            document.getElementById('subCashBal').textContent = formatAED(d.kpi.cashBalance);
+
+            // Cash Flow
+            document.getElementById('cfOpening').textContent = formatAED(d.cashFlow.opening);
+            document.getElementById('cfReceived').textContent = formatAED(d.cashFlow.received);
+            document.getElementById('cfVendors').textContent = formatAED(d.cashFlow.vendorPayments);
+            document.getElementById('cfExpenses').textContent = formatAED(d.cashFlow.otherExpenses);
+            document.getElementById('cfClosing').textContent = formatAED(d.cashFlow.closing);
+
+            // Timeline
+            const tl = document.getElementById('timeline');
+            tl.innerHTML = d.activities.map(a =>
+                `<div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">${a.date}</div>
+                    <div class="timeline-text">${a.text}</div>
+                </div>`
+            ).join('');
+
+            // Chart Summary
+            document.getElementById('chartSummary').innerHTML =
+                `Total Annual Revenue: <strong>${formatAED(d.monthlyRevenue.total)}</strong> &nbsp;|&nbsp; Average Monthly: <strong>${formatAED(d.monthlyRevenue.average)}</strong>`;
+
+            // Project Table
+            const statusClass = {
+                'In Progress': 'status-progress',
+                'Completed': 'status-completed',
+                'Not Yet Started': 'status-not-started',
+                'Cancelled': 'status-cancelled'
+            };
+            document.getElementById('projectTable').innerHTML = d.projects.map(p =>
+                `<tr>
+                    <td>${p.name}</td>
+                    <td>${p.contractor}</td>
+                    <td>${p.progress}%
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width:${p.progress}%;"></div>
+                        </div>
+                    </td>
+                    <td><span class="status-pill ${statusClass[p.status] || ''}">${p.status}</span></td>
+                    <td>${p.value.toLocaleString()}</td>
+                    <td>${p.remarks}</td>
+                </tr>`
+            ).join('');
+
+            // Receivable Table
+            document.getElementById('recvTable').innerHTML =
+                d.receivables.map(r => `<tr><td>${r.contractor}</td><td style="text-align:right;">${r.amount.toLocaleString()}</td></tr>`).join('') +
+                `<tr class="table-total"><td>Total Receivable</td><td style="text-align:right;">${d.totalReceivable.toLocaleString()}</td></tr>`;
+
+            // Payable Table
+            document.getElementById('payTable').innerHTML =
+                d.payables.map(p => `<tr><td>${p.vendor}</td><td style="text-align:right;">${p.amount.toLocaleString()}</td></tr>`).join('') +
+                `<tr class="table-total"><td>Total Payable</td><td style="text-align:right;">${d.totalPayable.toLocaleString()}</td></tr>`;
+
+            // Init Chart
+            initRevenueChart();
+        })();
+    </script>
+</body>
+</html>
