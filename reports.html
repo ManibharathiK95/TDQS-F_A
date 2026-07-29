@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDQS - Reports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--fg:#1B5E20;--fh:#2E7D32;--fl:#E8F5E9;--fm:#4CAF50;--w:#FFF;--bk:#121212;--g50:#FAFAFA;--g100:#F5F5F5;--g200:#EEE;--g300:#E0E0E0;--g500:#757575;--g700:#424242;--g900:#212121;--sw:70px;--swe:240px;--hh:64px;--red:#C62828;--blue:#1565C0;--orange:#F57C00;--purple:#7B1FA2;--teal:#00796B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--g100);color:var(--g900);overflow:hidden;height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sw);background:var(--bk);color:var(--w);z-index:1000;transition:width .3s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;flex-direction:column}
+.sidebar:hover{width:var(--swe)}
+.sidebar-logo{height:var(--hh);display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);gap:12px;white-space:nowrap}
+.sidebar-logo i{font-size:24px;color:var(--fm);min-width:30px;text-align:center}
+.sidebar-logo span{font-family:'Playfair Display',serif;font-size:18px;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .sidebar-logo span{opacity:1}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto;overflow-x:hidden}
+.nav-item{display:flex;align-items:center;padding:12px 20px;color:var(--g300);text-decoration:none;gap:12px;cursor:pointer;transition:all .2s;white-space:nowrap;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--w)}
+.nav-item.active{background:rgba(27,94,32,.2);color:var(--fm);border-left-color:var(--fm)}
+.nav-item i{font-size:18px;min-width:30px;text-align:center}
+.nav-item span{font-size:14px;font-weight:500;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .nav-item span{opacity:1}
+.main-wrapper{margin-left:var(--sw);height:100vh;display:flex;flex-direction:column;transition:margin-left .3s}
+.header{height:var(--hh);background:var(--w);border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:500;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:16px}
+.mobile-toggle{display:none;background:none;border:none;font-size:20px;color:var(--g700);cursor:pointer}
+.header-title h1{font-size:18px;font-weight:700;color:var(--bk)}
+.header-title p{font-size:12px;color:var(--g500)}
+.header-right{display:flex;align-items:center;gap:16px}
+.profile-icon{width:36px;height:36px;border-radius:50%;background:var(--fg);color:var(--w);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;cursor:pointer}
+.content{flex:1;overflow-y:auto;padding:24px;background:var(--g100)}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-header h2{font-size:22px;font-weight:700}
+.btn{padding:10px 20px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--fg);color:var(--w)}.btn-primary:hover{background:var(--fh)}
+.btn-secondary{background:var(--g100);color:var(--g700);border:1px solid var(--g300)}.btn-secondary:hover{background:var(--g200)}
+.btn-sm{padding:6px 12px;font-size:12px}
+
+/* Report Tabs */
+.report-tabs{display:flex;gap:0;border-bottom:2px solid var(--g200);margin-bottom:24px;overflow-x:auto}
+.rtab{padding:12px 20px;border:none;background:none;font-size:14px;font-weight:600;color:var(--g500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.rtab:hover{color:var(--fg)}.rtab.active{color:var(--fg);border-bottom-color:var(--fg)}
+.rtab-content{display:none}.rtab-content.active{display:block}
+
+/* KPI Row */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-item{background:var(--w);border-radius:8px;padding:16px 20px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);position:relative;overflow:hidden}
+.kpi-item::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.kpi-item.kpi-green::before{background:var(--fg)}.kpi-item.kpi-red::before{background:var(--red)}.kpi-item.kpi-blue::before{background:var(--blue)}.kpi-item.kpi-orange::before{background:var(--orange)}.kpi-item.kpi-purple::before{background:var(--purple)}
+.kpi-label{font-size:12px;color:var(--g500);font-weight:500;margin-bottom:6px}
+.kpi-val{font-size:24px;font-weight:700}
+.kpi-green .kpi-val{color:var(--fg)}.kpi-red .kpi-val{color:var(--red)}.kpi-blue .kpi-val{color:var(--blue)}.kpi-orange .kpi-val{color:var(--orange)}.kpi-purple .kpi-val{color:var(--purple)}
+.kpi-sub{font-size:11px;color:var(--g500);margin-top:4px}
+
+/* Cards */
+.card{background:var(--w);border-radius:8px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);padding:20px;margin-bottom:24px}
+.card-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title i{font-size:14px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-bottom:24px}
+
+/* Chart */
+.chart-container{position:relative;height:280px}
+.chart-sm{height:220px}
+
+/* Table */
+.table-container{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--g200);font-size:13px}
+th{font-weight:600;color:var(--g500);font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--g50)}
+tr:hover td{background:var(--g50)}
+.text-right{text-align:right}
+.font-bold{font-weight:700}
+.green{color:var(--fg)}.red{color:var(--red)}.blue{color:var(--blue)}.orange{color:var(--orange)}.purple{color:var(--purple)}
+.total-row{background:var(--fl)!important;font-weight:700}
+.total-row td{color:var(--fg)!important}
+.status-pill{padding:3px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap;display:inline-block}
+.sp-progress{background:#E3F2FD;color:var(--blue)}.sp-completed{background:var(--fl);color:var(--fh)}.sp-not-started{background:var(--g100);color:var(--g500)}.sp-cancelled{background:#FFEBEE;color:var(--red)}
+.progress-bar{width:100%;height:6px;background:var(--g200);border-radius:3px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;background:var(--fg);border-radius:3px}
+
+/* Summary Strip */
+.summary-strip{display:flex;gap:0;background:var(--g50);border-radius:8px;overflow:hidden;margin-bottom:24px}
+.ss-item{flex:1;padding:16px;text-align:center;border-right:1px solid var(--g200)}
+.ss-item:last-child{border-right:none}
+.ss-label{font-size:11px;color:var(--g500);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.ss-val{font-size:20px;font-weight:700}
+
+.no-data{text-align:center;padding:40px;color:var(--g500);font-size:14px}
+.no-data i{display:block;font-size:36px;opacity:.3;margin-bottom:8px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;color:var(--w);z-index:9999;transition:transform .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}.toast-success{background:var(--fg)}
+
+@media(max-width:1024px){.kpi-row{grid-template-columns:repeat(2,1fr)}.two-col,.three-col{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{width:var(--swe);left:calc(-1*var(--swe))}.sidebar.open{left:0}.sidebar:hover{width:var(--swe)}.sidebar .nav-item span,.sidebar:hover .nav-item span{opacity:1}.sidebar .sidebar-logo span,.sidebar:hover .sidebar-logo span{opacity:1}.main-wrapper{margin-left:0}.mobile-toggle{display:block}.content{padding:16px}.kpi-row{grid-template-columns:1fr 1fr}.summary-strip{flex-direction:column}.ss-item{border-right:none;border-bottom:1px solid var(--g200)}.report-tabs{overflow-x:auto}.rtab{padding:10px 14px;font-size:13px}}
+@media(max-width:480px){.kpi-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-logo"><i class="fas fa-hard-hat"></i><span>THULIR FZE</span></div>
+<nav class="sidebar-nav">
+<a class="nav-item" href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+<a class="nav-item" href="projects.html"><i class="fas fa-building"></i><span>Projects</span></a>
+<a class="nav-item" href="clients.html"><i class="fas fa-users"></i><span>Clients</span></a>
+<a class="nav-item" href="vendors.html"><i class="fas fa-truck"></i><span>Vendors</span></a>
+<a class="nav-item" href="quotations.html"><i class="fas fa-file-alt"></i><span>Quotations</span></a>
+<a class="nav-item" href="invoices.html"><i class="fas fa-file-invoice-dollar"></i><span>Invoices</span></a>
+<a class="nav-item" href="payments.html"><i class="fas fa-money-check-alt"></i><span>Payments</span></a>
+<a class="nav-item" href="receipts.html"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+<a class="nav-item" href="expenses.html"><i class="fas fa-credit-card"></i><span>Expenses</span></a>
+<a class="nav-item active" href="reports.html"><i class="fas fa-chart-pie"></i><span>Reports</span></a>
+<a class="nav-item" href="documents.html"><i class="fas fa-folder-open"></i><span>Documents</span></a>
+<a class="nav-item" href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+</nav>
+</aside>
+
+<div class="main-wrapper">
+<header class="header">
+<div class="header-left">
+<button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+<div class="header-title"><h1>Reports</h1><p>Thulir Design & QS Services FZE</p></div>
+</div>
+<div class="header-right"><div class="profile-icon">TD</div></div>
+</header>
+<main class="content">
+<div class="page-header">
+<div><h2>Business Analytics</h2></div>
+<div style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--g500)"><i class="fas fa-calendar"></i> FY 2025-26 (Apr – Mar)</div>
+</div>
+
+<div class="report-tabs">
+<button class="rtab active" data-rtab="financial"><i class="fas fa-coins" style="margin-right:6px"></i>Financial</button>
+<button class="rtab" data-rtab="projects"><i class="fas fa-building" style="margin-right:6px"></i>Projects</button>
+<button class="rtab" data-rtab="clients"><i class="fas fa-users" style="margin-right:6px"></i>Clients</button>
+<button class="rtab" data-rtab="vendors"><i class="fas fa-truck" style="margin-right:6px"></i>Vendors</button>
+</div>
+
+<!-- FINANCIAL REPORTS -->
+<div class="rtab-content active" id="rtab-financial">
+<div class="kpi-row">
+<div class="kpi-item kpi-green"><div class="kpi-label">Total Revenue</div><div class="kpi-val" id="kpiRevenue"></div><div class="kpi-sub">FY 2025-26</div></div>
+<div class="kpi-item kpi-red"><div class="kpi-label">Total Expenses</div><div class="kpi-val" id="kpiExpenses"></div><div class="kpi-sub">Operating costs</div></div>
+<div class="kpi-item kpi-blue"><div class="kpi-label">Net Profit</div><div class="kpi-val" id="kpiProfit"></div><div class="kpi-sub">Revenue - Expenses</div></div>
+<div class="kpi-item kpi-purple"><div class="kpi-label">Profit Margin</div><div class="kpi-val" id="kpiMargin"></div><div class="kpi-sub">Net profit %</div></div>
+</div>
+
+<div class="summary-strip">
+<div class="ss-item"><div class="ss-label">Invoiced</div><div class="ss-val green" id="ssInvoiced"></div></div>
+<div class="ss-item"><div class="ss-label">Received</div><div class="ss-val green" id="ssReceived"></div></div>
+<div class="ss-item"><div class="ss-label">Outstanding</div><div class="ss-val red" id="ssOutstanding"></div></div>
+<div class="ss-item"><div class="ss-label">Vendor Paid</div><div class="ss-val orange" id="ssVendorPaid"></div></div>
+<div class="ss-item"><div class="ss-label">Vendor Balance</div><div class="ss-val red" id="ssVendorBal"></div></div>
+</div>
+
+<div class="two-col">
+<div class="card">
+<div class="card-title"><i class="fas fa-chart-bar" style="color:var(--fg)"></i> Monthly Revenue</div>
+<div class="chart-container"><canvas id="revenueChart"></canvas></div>
+</div>
+<div class="card">
+<div class="card-title"><i class="fas fa-chart-line" style="color:var(--red)"></i> Monthly Expenses</div>
+<div class="chart-container"><canvas id="expenseChart"></canvas></div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title"><i class="fas fa-chart-area" style="color:var(--blue)"></i> Profit Trend (Revenue - Expenses)</div>
+<div class="chart-container"><canvas id="profitChart"></canvas></div>
+</div>
+
+<div class="card">
+<div class="card-title"><i class="fas fa-water" style="color:var(--teal)"></i> Cash Flow Summary</div>
+<div class="table-container">
+<table>
+<thead><tr><th>Month</th><th class="text-right">Opening</th><th class="text-right">Revenue</th><th class="text-right">Vendor Pay</th><th class="text-right">Expenses</th><th class="text-right">Closing</th></tr></thead>
+<tbody id="cashFlowBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- PROJECT REPORTS -->
+<div class="rtab-content" id="rtab-projects">
+<div class="kpi-row">
+<div class="kpi-item kpi-green"><div class="kpi-label">Total Projects</div><div class="kpi-val">10</div></div>
+<div class="kpi-item kpi-blue"><div class="kpi-label">Active</div><div class="kpi-val">5</div></div>
+<div class="kpi-item kpi-green"><div class="kpi-label">Completed</div><div class="kpi-val">2</div></div>
+<div class="kpi-item kpi-red"><div class="kpi-label">Total Contract Value</div><div class="kpi-val">AED 1.08M</div></div>
+</div>
+<div class="card">
+<div class="card-title"><i class="fas fa-tasks" style="color:var(--blue)"></i> Project Status Overview</div>
+<div class="table-container">
+<table>
+<thead><tr><th>Project</th><th>Client</th><th>Contract Value</th><th>Progress</th><th>Status</th></tr></thead>
+<tbody id="projStatusBody"></tbody>
+</table>
+</div>
+</div>
+<div class="two-col">
+<div class="card">
+<div class="card-title"><i class="fas fa-coins" style="color:var(--fg)"></i> Project Profitability</div>
+<div class="table-container">
+<table>
+<thead><tr><th>Project</th><th class="text-right">Revenue</th><th class="text-right">Vendor Cost</th><th class="text-right">Profit</th><th class="text-right">Margin</th></tr></thead>
+<tbody id="projProfitBody"></tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<div class="card-title"><i class="fas fa-chart-pie" style="color:var(--orange)"></i> Revenue by Type</div>
+<div class="chart-container chart-sm"><canvas id="typeChart"></canvas></div>
+</div>
+</div>
+</div>
+
+<!-- CLIENT REPORTS -->
+<div class="rtab-content" id="rtab-clients">
+<div class="kpi-row">
+<div class="kpi-item kpi-green"><div class="kpi-label">Total Clients</div><div class="kpi-val">8</div></div>
+<div class="kpi-item kpi-blue"><div class="kpi-label">Active Clients</div><div class="kpi-val">7</div></div>
+<div class="kpi-item kpi-red"><div class="kpi-label">Total Outstanding</div><div class="kpi-val" id="kpiClientOut"></div></div>
+<div class="kpi-item kpi-green"><div class="kpi-label">Total Collected</div><div class="kpi-val" id="kpiClientCol"></div></div>
+</div>
+<div class="card">
+<div class="card-title"><i class="fas fa-exclamation-triangle" style="color:var(--red)"></i> Client Outstanding</div>
+<div class="table-container">
+<table>
+<thead><tr><th>Client</th><th class="text-right">Total Invoiced</th><th class="text-right">Received</th><th class="text-right">Outstanding</th><th class="text-right">Status</th></tr></thead>
+<tbody id="clientOutBody"></tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<div class="card-title"><i class="fas fa-chart-bar" style="color:var(--fg)"></i> Client Revenue</div>
+<div class="chart-container chart-sm"><canvas id="clientRevChart"></canvas></div>
+</div>
+</div>
+
+<!-- VENDOR REPORTS -->
+<div class="rtab-content" id="rtab-vendors">
+<div class="kpi-row">
+<div class="kpi-item kpi-orange"><div class="kpi-label">Total Vendors</div><div class="kpi-val">8</div></div>
+<div class="kpi-item kpi-green"><div class="kpi-label">Total Cost</div><div class="kpi-val" id="kpiVCost"></div></div>
+<div class="kpi-item kpi-blue"><div class="kpi-label">Total Paid</div><div class="kpi-val" id="kpiVPaid"></div></div>
+<div class="kpi-item kpi-red"><div class="kpi-label">Balance Pending</div><div class="kpi-val" id="kpiVBal"></div></div>
+</div>
+<div class="card">
+<div class="card-title"><i class="fas fa-money-bill-wave" style="color:var(--orange)"></i> Vendor Cost Summary</div>
+<div class="table-container">
+<table>
+<thead><tr><th>Vendor</th><th class="text-right">Total Cost</th><th class="text-right">Paid</th><th class="text-right">Balance</th><th>% Paid</th></tr></thead>
+<tbody id="vendorCostBody"></tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<div class="card-title"><i class="fas fa-exclamation-circle" style="color:var(--red)"></i> Vendor Outstanding</div>
+<div class="table-container">
+<table>
+<thead><tr><th>Vendor</th><th class="text-right">Pending Amount</th><th>Projects</th></tr></thead>
+<tbody id="vendorOutBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+function fmt(n){return "AED "+Number(n||0).toLocaleString()}
+const MONTHS=['Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+
+// ── DATA ──
+const revenueByMonth=[15000,18000,12000,18500,0,0,0,0,0,0,0,0];
+const expensesByMonth=[9800,10310,9310,11600,0,0,0,0,0,0,0,0];
+const totalRevenue=revenueByMonth.reduce((a,b)=>a+b,0);
+const totalExpenses=expensesByMonth.reduce((a,b)=>a+b,0);
+const netProfit=totalRevenue-totalExpenses;
+
+const projects=[
+{name:"Dubai Villa Rebar Work",client:"ABC Construction",contractValue:52500,revenue:37800,vendorCost:20000,progress:80,status:"In Progress"},
+{name:"Marina Tower Structural",client:"XYZ Builders",contractValue:126000,revenue:126000,vendorCost:45000,progress:100,status:"Completed"},
+{name:"Al Mamzar Villa QS",client:"Delta Group",contractValue:36750,revenue:15000,vendorCost:0,progress:45,status:"In Progress"},
+{name:"JBR Apartment Architecture",client:"SkyHigh LLC",contractValue:89250,revenue:0,vendorCost:0,progress:0,status:"Not Yet Started"},
+{name:"Palm Jumeirah Estimation",client:"Coastline Con.",contractValue:26250,revenue:0,vendorCost:10000,progress:20,status:"In Progress"},
+{name:"Downtown Tower Rebar",client:"ABC Construction",contractValue:78750,revenue:75500,vendorCost:35000,progress:60,status:"In Progress"},
+{name:"SZR Structural",client:"Emirates Structural",contractValue:99750,revenue:15000,vendorCost:30000,progress:15,status:"Cancelled"},
+{name:"Naboodah Complex BOQ",client:"Al Naboodah",contractValue:44100,revenue:44100,vendorCost:0,progress:100,status:"Completed"},
+{name:"Business Bay Tower Design",client:"Gulf Engineering",contractValue:115250,revenue:115250,vendorCost:55000,progress:10,status:"In Progress"},
+{name:"Deira Villa Rebar",client:"Al Naboodah",contractValue:42000,revenue:0,vendorCost:0,progress:0,status:"Not Yet Started"}
+];
+
+const clients=[
+{name:"ABC Construction LLC",invoiced:125350,received:92800},
+{name:"XYZ Builders FZCO",invoiced:126000,received:126000},
+{name:"Delta Group Contracting",invoiced:15000,received:10000},
+{name:"SkyHigh LLC",invoiced:0,received:0},
+{name:"Coastline Constructions",invoiced:5000,received:0},
+{name:"Gulf Engineering Consultants",invoiced:115250,received:15000},
+{name:"Emirates Structural Co.",invoiced:15000,received:5000},
+{name:"Al Naboodah Contracting LLC",invoiced:86100,received:86100}
+];
+
+const vendors=[
+{name:"Technical Drafting Co.",cost:55000,paid:35000,projects:"Dubai Villa, Downtown Tower"},
+{name:"Design Masters LLC",cost:130000,paid:120000,projects:"Marina Tower, SZR, Business Bay"},
+{name:"Arif Hassan Architecture",cost:40000,paid:0,projects:"JBR Apartment"},
+{name:"Build Solutions Estimation",cost:10000,paid:0,projects:"Palm Jumeirah"},
+{name:"QS Masters UAE",cost:33000,paid:31000,projects:"Al Mamzar Villa, Naboodah"},
+{name:"Shyam Detailing Services",cost:12000,paid:8000,projects:"Dubai Villa"},
+{name:"Vishnu Cad Services",cost:8000,paid:4000,projects:"Downtown Tower"},
+{name:"Hari Estimation Services",cost:12000,paid:12000,projects:"Business Bay"}
+];
+
+const totalInvoiced=clients.reduce((a,c)=>a+c.invoiced,0);
+const totalReceived=clients.reduce((a,c)=>a+c.received,0);
+const totalOutstanding=totalInvoiced-totalReceived;
+const totalVCost=vendors.reduce((a,v)=>a+v.cost,0);
+const totalVPaid=vendors.reduce((a,v)=>a+v.paid,0);
+const totalVBal=totalVCost-totalVPaid;
+const clientOutstanding=clients.reduce((a,c)=>a+(c.invoiced-c.received),0);
+const clientCollected=totalReceived;
+
+// ── FINANCIAL TAB ──
+document.getElementById('kpiRevenue').textContent=fmt(totalRevenue);
+document.getElementById('kpiExpenses').textContent=fmt(totalExpenses);
+document.getElementById('kpiProfit').textContent=fmt(netProfit);
+document.getElementById('kpiMargin').textContent=(totalRevenue>0?Math.round(netProfit/totalRevenue*100):0)+'%';
+document.getElementById('ssInvoiced').textContent=fmt(totalInvoiced);
+document.getElementById('ssReceived').textContent=fmt(totalReceived);
+document.getElementById('ssOutstanding').textContent=fmt(totalOutstanding);
+document.getElementById('ssVendorPaid').textContent=fmt(totalVPaid);
+document.getElementById('ssVendorBal').textContent=fmt(totalVBal);
+
+// Cash Flow Table
+let cfOpen=20000;
+let cfRows='';
+MONTHS.forEach((m,i)=>{
+const rev=revenueByMonth[i];const vPay=rev>0?Math.round(rev*0.4):0;const exp=expensesByMonth[i];
+const cfClose=cfOpen+rev-vPay-exp;
+cfRows+=`<tr><td>${m}</td><td class="text-right">${fmt(cfOpen)}</td><td class="text-right green">${fmt(rev)}</td><td class="text-right red">${fmt(vPay)}</td><td class="text-right red">${fmt(exp)}</td><td class="text-right font-bold">${fmt(cfClose)}</td></tr>`;
+cfOpen=cfClose;
+});
+document.getElementById('cashFlowBody').innerHTML=cfRows;
+
+// Charts
+const chartOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#121212',titleFont:{family:'Inter'},bodyFont:{family:'Inter'}}},scales:{y:{beginAtZero:true,grid:{color:'#F5F5F5'},ticks:{font:{family:'Inter',size:11},color:'#757575',callback:v=>'AED '+v/1000+'k'}},x:{grid:{display:false},ticks:{font:{family:'Inter',size:11},color:'#757575'}}}};
+
+new Chart(document.getElementById('revenueChart').getContext('2d'),{type:'bar',data:{labels:MONTHS,datasets:[{label:'Revenue',data:revenueByMonth,backgroundColor:'#1B5E20',borderRadius:4,barPercentage:.5}]},options:chartOpts});
+new Chart(document.getElementById('expenseChart').getContext('2d'),{type:'bar',data:{labels:MONTHS,datasets:[{label:'Expenses',data:expensesByMonth,backgroundColor:'#C62828',borderRadius:4,barPercentage:.5}]},options:chartOpts});
+new Chart(document.getElementById('profitChart').getContext('2d'),{type:'line',data:{labels:MONTHS,datasets:[{label:'Profit',data:MONTHS.map((m,i)=>revenueByMonth[i]-expensesByMonth[i]),borderColor:'#1565C0',backgroundColor:'rgba(21,101,192,0.1)',fill:true,tension:.3,pointRadius:3,pointBackgroundColor:'#1565C0'}]},options:chartOpts});
+
+// ── PROJECTS TAB ──
+const spClass={['In Progress']:'sp-progress',Completed:'sp-completed',['Not Yet Started']:'sp-not-started',Cancelled:'sp-cancelled'};
+document.getElementById('projStatusBody').innerHTML=projects.map(p=>`<tr>
+<td style="font-weight:500">${p.name}</td><td>${p.client}</td><td class="text-right">${fmt(p.contractValue)}</td>
+<td style="min-width:120px">${p.progress}%<div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%"></div></div></td>
+<td><span class="status-pill ${spClass[p.status]||''}">${p.status}</span></td></tr>`).join('');
+
+document.getElementById('projProfitBody').innerHTML=projects.filter(p=>p.revenue>0).map(p=>{
+const profit=p.revenue-p.vendorCost;const margin=p.revenue>0?Math.round(profit/p.revenue*100):0;
+return `<tr><td style="font-weight:500">${p.name}</td><td class="text-right green">${fmt(p.revenue)}</td><td class="text-right orange">${fmt(p.vendorCost)}</td><td class="text-right ${profit>=0?'green':'red'}">${fmt(profit)}</td><td class="text-right ${margin>=0?'green':'red'}">${margin}%</td></tr>`}).join('');
+
+const typeRevenue={};
+projects.forEach(p=>{const t=p.name.includes('Rebar')?'Rebar Detailing':p.name.includes('Structural')?'Structural Design':p.name.includes('QS')||p.name.includes('BOQ')?'QS / BOQ':p.name.includes('Architecture')||p.name.includes('JBR')?'Architecture':p.name.includes('Estimation')?'Estimation':'Other';typeRevenue[t]=(typeRevenue[t]||0)+p.revenue});
+new Chart(document.getElementById('typeChart').getContext('2d'),{type:'doughnut',data:{labels:Object.keys(typeRevenue),datasets:[{data:Object.values(typeRevenue),backgroundColor:['#1B5E20','#1565C0','#7B1FA2','#F57C00','#C62828','#757575'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'Inter',size:11},padding:12}}}}});
+
+// ── CLIENTS TAB ──
+document.getElementById('kpiClientOut').textContent=fmt(clientOutstanding);
+document.getElementById('kpiClientCol').textContent=fmt(clientCollected);
+
+document.getElementById('clientOutBody').innerHTML=clients.map(c=>{
+const out=c.invoiced-c.received;
+return `<tr><td style="font-weight:500">${c.name}</td><td class="text-right">${fmt(c.invoiced)}</td><td class="text-right green">${fmt(c.received)}</td><td class="text-right ${out>0?'red':'green'}" style="font-weight:700">${fmt(out)}</td><td>${out>0?'<span class="status-pill sp-progress">Outstanding</span>':'<span class="status-pill sp-completed">Cleared</span>'}</td></tr>`}).join('')+`<tr class="total-row"><td>Total</td><td class="text-right">${fmt(totalInvoiced)}</td><td class="text-right">${fmt(totalReceived)}</td><td class="text-right">${fmt(totalOutstanding)}</td><td></td></tr>`;
+
+const topClients=clients.filter(c=>c.invoiced>0).sort((a,b)=>b.invoiced-a.invoiced).slice(0,6);
+new Chart(document.getElementById('clientRevChart').getContext('2d'),{type:'bar',data:{labels:topClients.map(c=>c.name.split(' ')[0]),datasets:[{label:'Revenue',data:topClients.map(c=>c.invoiced),backgroundColor:'#2E7D32',borderRadius:4,barPercentage:.5}]},options:{...chartOpts,indexAxis:'y',scales:{x:{beginAtZero:true,grid:{color:'#F5F5F5'},ticks:{font:{family:'Inter',size:11},color:'#757575',callback:v=>'AED '+v/1000+'k'}},y:{grid:{display:false},ticks:{font:{family:'Inter',size:11},color:'#757575'}}}}});
+
+// ── VENDORS TAB ──
+document.getElementById('kpiVCost').textContent=fmt(totalVCost);
+document.getElementById('kpiVPaid').textContent=fmt(totalVPaid);
+document.getElementById('kpiVBal').textContent=fmt(totalVBal);
+
+document.getElementById('vendorCostBody').innerHTML=vendors.map(v=>{
+const bal=v.cost-v.paid;const pct=v.cost>0?Math.round(v.paid/v.cost*100):0;
+return `<tr><td style="font-weight:500">${v.name}</td><td class="text-right orange">${fmt(v.cost)}</td><td class="text-right green">${fmt(v.paid)}</td><td class="text-right ${bal>0?'red':'green'}" style="font-weight:700">${fmt(bal)}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1"><div class="progress-fill" style="width:${pct}%;background:${pct>=100?'var(--fg)':'var(--orange)'}"></div></div><span style="font-size:12px;font-weight:600;color:var(--g500)">${pct}%</span></div></td></tr>`}).join('')+`<tr class="total-row"><td>Total</td><td class="text-right">${fmt(totalVCost)}</td><td class="text-right">${fmt(totalVPaid)}</td><td class="text-right">${fmt(totalVBal)}</td><td></td></tr>`;
+
+const outVendors=vendors.filter(v=>(v.cost-v.paid)>0).sort((a,b)=>(b.cost-b.paid)-(a.cost-a.paid));
+document.getElementById('vendorOutBody').innerHTML=outVendors.length?outVendors.map(v=>`<tr><td style="font-weight:500">${v.name}</td><td class="text-right red" style="font-weight:700">${fmt(v.cost-v.paid)}</td><td style="font-size:12px;color:var(--g500)">${v.projects}</td></tr>`).join(''):'<tr><td colspan="3" class="no-data" style="padding:24px"><i class="fas fa-check-circle"></i>All vendors fully paid</td></tr>';
+
+// ── TAB SWITCHING ──
+document.querySelectorAll('.rtab').forEach(tab=>{
+tab.addEventListener('click',()=>{
+document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.rtab-content').forEach(c=>c.classList.remove('active'));
+tab.classList.add('active');
+document.getElementById('rtab-'+tab.dataset.rtab).classList.add('active');
+});
+});
+
+// ── SIDEBAR ──
+const sidebar=document.getElementById('sidebar'),mobileToggle=document.getElementById('mobileToggle'),overlay=document.getElementById('sidebarOverlay');
+mobileToggle.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('active')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('active')});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',e=>{document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));e.currentTarget.classList.add('active');if(window.innerWidth<=768){sidebar.classList.remove('open');overlay.classList.remove('active')}})});
+
+function showToast(msg){const t=document.createElement('div');t.className='toast toast-success';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3000)}
+</script>
+</body>
+</html>
