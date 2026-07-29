@@ -275,20 +275,19 @@ td { color: var(--gray-900); }
     .kpi-grid, .sub-kpi-grid { grid-template-columns: 1fr; }
 }
 
-/* ==============================
-   Outstanding Receivable / Payable Fix
-   ============================== */
+/* Outstanding Summary Compact Table */
 
 #toggle-receivable table,
 #toggle-payable table {
-    table-layout: fixed;
+    width: auto;
+    min-width: 450px;
 }
 
 #toggle-receivable th:first-child,
 #toggle-receivable td:first-child,
 #toggle-payable th:first-child,
 #toggle-payable td:first-child {
-    width: 65%;
+    width: 300px;
     text-align: left;
 }
 
@@ -296,7 +295,7 @@ td { color: var(--gray-900); }
 #toggle-receivable td:last-child,
 #toggle-payable th:last-child,
 #toggle-payable td:last-child {
-    width: 35%;
+    width: 150px;
     text-align: right;
 }
 
@@ -304,7 +303,7 @@ td { color: var(--gray-900); }
 #toggle-receivable td,
 #toggle-payable th,
 #toggle-payable td {
-    padding: 10px 16px;
+    padding: 10px 14px;
 }
 
 /* ==============================
