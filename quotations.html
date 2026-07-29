@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDQS - Quotations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--fg:#1B5E20;--fh:#2E7D32;--fl:#E8F5E9;--fm:#4CAF50;--w:#FFF;--bk:#121212;--g50:#FAFAFA;--g100:#F5F5F5;--g200:#EEE;--g300:#E0E0E0;--g500:#757575;--g700:#424242;--g900:#212121;--sw:70px;--swe:240px;--hh:64px;--red:#C62828;--blue:#1565C0;--orange:#F57C00}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--g100);color:var(--g900);overflow:hidden;height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sw);background:var(--bk);color:var(--w);z-index:1000;transition:width .3s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;flex-direction:column}
+.sidebar:hover{width:var(--swe)}
+.sidebar-logo{height:var(--hh);display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);gap:12px;white-space:nowrap}
+.sidebar-logo i{font-size:24px;color:var(--fm);min-width:30px;text-align:center}
+.sidebar-logo span{font-family:'Playfair Display',serif;font-size:18px;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .sidebar-logo span{opacity:1}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto;overflow-x:hidden}
+.nav-item{display:flex;align-items:center;padding:12px 20px;color:var(--g300);text-decoration:none;gap:12px;cursor:pointer;transition:all .2s;white-space:nowrap;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--w)}
+.nav-item.active{background:rgba(27,94,32,.2);color:var(--fm);border-left-color:var(--fm)}
+.nav-item i{font-size:18px;min-width:30px;text-align:center}
+.nav-item span{font-size:14px;font-weight:500;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .nav-item span{opacity:1}
+.main-wrapper{margin-left:var(--sw);height:100vh;display:flex;flex-direction:column;transition:margin-left .3s}
+.header{height:var(--hh);background:var(--w);border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:500;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:16px}
+.mobile-toggle{display:none;background:none;border:none;font-size:20px;color:var(--g700);cursor:pointer}
+.header-title h1{font-size:18px;font-weight:700;color:var(--bk)}
+.header-title p{font-size:12px;color:var(--g500)}
+.header-right{display:flex;align-items:center;gap:16px}
+.profile-icon{width:36px;height:36px;border-radius:50%;background:var(--fg);color:var(--w);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;cursor:pointer}
+.content{flex:1;overflow-y:auto;padding:24px;background:var(--g100)}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-header h2{font-size:22px;font-weight:700}
+.btn{padding:10px 20px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--fg);color:var(--w)}.btn-primary:hover{background:var(--fh)}
+.btn-secondary{background:var(--g100);color:var(--g700);border:1px solid var(--g300)}.btn-secondary:hover{background:var(--g200)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-outline{background:transparent;color:var(--fg);border:1px solid var(--fg)}.btn-outline:hover{background:var(--fl)}
+.btn-danger{background:var(--red);color:var(--w)}.btn-danger:hover{background:#B71C1C}
+.btn-blue{background:var(--blue);color:var(--w)}.btn-blue:hover{background:#0D47A1}
+.filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.search-input{padding:8px 14px 8px 36px;border:1px solid var(--g300);border-radius:6px;font-size:14px;outline:none;width:280px;background:var(--w) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23757575' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E") 10px center/16px no-repeat;transition:border-color .2s}
+.search-input:focus{border-color:var(--fg)}
+.filter-pills{display:flex;gap:0;border:1px solid var(--g300);border-radius:6px;overflow:hidden}
+.filter-pill{padding:8px 16px;border:none;background:var(--w);font-size:13px;font-weight:500;color:var(--g500);cursor:pointer;transition:all .2s;white-space:nowrap}
+.filter-pill:hover{color:var(--fg)}.filter-pill.active{background:var(--fg);color:var(--w)}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px}
+.summary-card{background:var(--w);border-radius:8px;padding:20px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.summary-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+.summary-card.active-filter{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.summary-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.sc-total::before{background:var(--fg)}.sc-draft::before{background:var(--g500)}.sc-approved::before{background:var(--fh)}.sc-value-card::before{background:var(--blue)}
+.sc-title{font-size:13px;color:var(--g500);font-weight:500;margin-bottom:8px}
+.sc-value{font-size:28px;font-weight:700}
+.sc-total .sc-value{color:var(--fg)}.sc-draft .sc-value{color:var(--g500)}.sc-approved .sc-value{color:var(--fh)}.sc-value-card .sc-value{color:var(--blue)}
+.sc-sub{font-size:12px;color:var(--g500);margin-top:4px}
+.table-card{background:var(--w);border-radius:8px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden}
+.table-container{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--g200);font-size:14px}
+th{font-weight:600;color:var(--g500);font-size:12px;text-transform:uppercase;letter-spacing:.5px;background:var(--g50);position:sticky;top:0}
+tr:hover td{background:var(--g50)}
+.status-pill{padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap;display:inline-block}
+.sp-draft{background:var(--g100);color:var(--g500)}.sp-sent{background:#E3F2FD;color:var(--blue)}.sp-approved{background:var(--fl);color:var(--fh)}.sp-rejected{background:#FFEBEE;color:var(--red)}.sp-cancelled{background:var(--g100);color:var(--g500)}
+.code-badge{font-weight:700;color:var(--fg);font-size:13px;background:var(--fl);padding:3px 8px;border-radius:4px}
+.type-tag{font-size:12px;color:var(--g500);background:var(--g100);padding:2px 8px;border-radius:4px}
+.action-btns{display:flex;gap:6px}
+.action-btn{width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;background:var(--g100);color:var(--g500)}
+.action-btn:hover{background:var(--fl);color:var(--fg)}
+.no-results{text-align:center;padding:48px 24px;color:var(--g500)}.no-results i{font-size:48px;margin-bottom:12px;opacity:.3}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;align-items:flex-start;justify-content:center;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--w);border-radius:12px;width:800px;max-width:95vw;margin:40px auto;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--g200);position:sticky;top:0;background:var(--w);z-index:2;border-radius:12px 12px 0 0}
+.modal-header h2{font-size:18px;font-weight:700}
+.modal-close{width:36px;height:36px;border:none;background:var(--g100);border-radius:50%;cursor:pointer;font-size:18px;color:var(--g500);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:#FFEBEE;color:var(--red)}
+.modal-body{flex:1;overflow-y:auto;padding:24px}
+.form-section{margin-bottom:28px}
+.form-section-title{font-size:15px;font-weight:700;color:var(--fg);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--fl);display:flex;align-items:center;gap:8px}
+.form-section-title i{font-size:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.form-grid .full{grid-column:1/-1}.form-grid .span-2{grid-column:span 2}
+.form-group{display:flex;flex-direction:column}
+.form-label{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:6px}
+.form-input,.form-select,.form-textarea{padding:10px 12px;border:1px solid var(--g300);border-radius:6px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:var(--w);color:var(--g900)}
+.form-textarea{resize:vertical;min-height:60px}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--fg)}
+.form-input[readonly]{background:var(--fl);border:1px solid rgba(27,94,32,.2);font-weight:700;color:var(--fg)}
+.form-input.error,.form-select.error{border-color:var(--red)}
+.form-error{font-size:11px;color:var(--red);margin-top:4px;display:none}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;border-top:1px solid var(--g200);position:sticky;bottom:0;background:var(--w);border-radius:0 0 12px 12px}
+
+.items-table{width:100%;border-collapse:collapse;margin-top:12px}
+.items-table th{font-size:11px;padding:8px 10px;background:var(--g100);text-transform:uppercase}
+.items-table td{padding:8px 10px;vertical-align:middle}
+.items-table input,.items-table select{width:100%;padding:6px 8px;border:1px solid var(--g300);border-radius:4px;font-size:13px;font-family:inherit;outline:none}
+.items-table input:focus,.items-table select:focus{border-color:var(--fg)}
+.items-table .remove-item{width:28px;height:28px;border:none;background:#FFEBEE;color:var(--red);border-radius:4px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
+.items-table .remove-item:hover{background:var(--red);color:var(--w)}
+.add-item-btn{margin-top:8px;padding:6px 14px;border:1px dashed var(--g300);background:none;border-radius:4px;font-size:13px;color:var(--fg);cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.add-item-btn:hover{background:var(--fl);border-color:var(--fg)}
+.commercial-summary{background:var(--g50);border-radius:8px;padding:20px;margin-top:16px}
+.comm-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px}
+.comm-row.total{border-top:2px solid var(--g300);margin-top:8px;padding-top:12px;font-size:16px;font-weight:700;color:var(--fg)}
+.comm-row .label{color:var(--g500)}.comm-row .val{font-weight:600}
+
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1500}
+.drawer-overlay.open{display:block}
+.drawer{position:fixed;top:0;right:-600px;bottom:0;width:600px;max-width:100vw;background:var(--w);z-index:1501;box-shadow:-4px 0 24px rgba(0,0,0,.15);transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drawer.open{right:0}
+.drawer-header{padding:20px 24px;border-bottom:1px solid var(--g200);display:flex;justify-content:space-between;align-items:flex-start}
+.drawer-info{display:flex;flex-direction:column;gap:8px}
+.drawer-top{display:flex;align-items:center;gap:10px}
+.drawer-name{font-size:18px;font-weight:700}
+.drawer-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.drawer-quick-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.drawer-quick-actions .btn{font-size:12px;padding:6px 12px}
+.drawer-tabs{display:flex;border-bottom:2px solid var(--g200);padding:0 24px;flex-shrink:0;overflow-x:auto}
+.dtab{padding:12px 14px;border:none;background:none;font-size:13px;font-weight:600;color:var(--g500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.dtab:hover{color:var(--fg)}.dtab.active{color:var(--fg);border-bottom-color:var(--fg)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px}
+.dtab-content{display:none}.dtab-content.active{display:block}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.detail-item{padding:12px;background:var(--g50);border-radius:6px}
+.detail-label{font-size:12px;color:var(--g500);margin-bottom:4px}
+.detail-value{font-size:15px;font-weight:600;color:var(--g900)}
+.detail-value.highlight{color:var(--fg);font-size:18px}
+.detail-value.red{color:var(--red)}
+.detail-full{grid-column:1/-1}
+.mini-table{width:100%;border-collapse:collapse;margin-top:12px}
+.mini-table th{font-size:11px;padding:8px 10px;background:var(--g100)}
+.mini-table td{font-size:13px;padding:8px 10px}
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--g300)}
+.tl-item{position:relative;margin-bottom:20px}.tl-item:last-child{margin-bottom:0}
+.tl-dot{position:absolute;left:-21px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--fg);border:2px solid var(--w);box-shadow:0 0 0 2px var(--fg)}
+.tl-date{font-size:12px;font-weight:600;color:var(--g500);margin-bottom:4px}
+.tl-text{font-size:14px;color:var(--g700)}.tl-text::before{content:'✓ ';color:var(--fg);font-weight:700}
+.empty-state{text-align:center;padding:24px;color:var(--g500);font-size:13px}.empty-state i{display:block;font-size:32px;opacity:.3;margin-bottom:8px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;color:var(--w);z-index:9999;transition:transform .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}.toast-success{background:var(--fg)}.toast-error{background:var(--red)}
+
+/* PRINT */
+.print-area{display:none}
+@media print{
+body *{visibility:hidden}.print-area,.print-area *{visibility:visible}
+.print-area{position:fixed;left:0;top:0;width:100%;padding:40px;background:#fff;display:block!important}
+.print-header{text-align:center;margin-bottom:30px;border-bottom:2px solid var(--bk);padding-bottom:20px}
+.print-header h1{font-size:22px;color:var(--bk);margin-bottom:4px}.print-header p{font-size:13px;color:var(--g500)}
+.print-info{display:flex;justify-content:space-between;margin-bottom:24px;font-size:13px}
+.print-info div{line-height:1.8}.print-info strong{color:var(--bk)}
+.print-items{width:100%;border-collapse:collapse;margin:20px 0}
+.print-items th,.print-items td{border:1px solid var(--g300);padding:8px 12px;font-size:13px}
+.print-items th{background:var(--g100);font-weight:600}
+.print-terms{margin-top:24px;font-size:12px;color:var(--g700);line-height:1.8}
+.print-terms h3{font-size:14px;margin-bottom:8px}
+.print-sign{display:flex;justify-content:flex-end;margin-top:60px;font-size:13px}
+.print-sign-line{width:200px;border-top:1px solid var(--bk);text-align:center;padding-top:6px}
+}
+
+@media(max-width:1024px){.summary-grid{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr 1fr}.form-grid .span-2{grid-column:auto}.detail-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{width:var(--swe);left:calc(-1*var(--swe))}.sidebar.open{left:0}.sidebar:hover{width:var(--swe)}.sidebar .nav-item span,.sidebar:hover .nav-item span{opacity:1}.sidebar .sidebar-logo span,.sidebar:hover .sidebar-logo span{opacity:1}.main-wrapper{margin-left:0}.mobile-toggle{display:block}.content{padding:16px}.search-input{width:100%}.filter-bar{flex-direction:column;align-items:stretch}.filter-pills{overflow-x:auto}.modal{margin:0;max-width:100vw;min-height:100vh;border-radius:0}.drawer{width:100vw}.drawer-quick-actions{flex-direction:column}.form-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.summary-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-logo"><i class="fas fa-hard-hat"></i><span>THULIR FZE</span></div>
+<nav class="sidebar-nav">
+<a class="nav-item" href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+<a class="nav-item" href="projects.html"><i class="fas fa-building"></i><span>Projects</span></a>
+<a class="nav-item" href="clients.html"><i class="fas fa-users"></i><span>Clients</span></a>
+<a class="nav-item" href="vendors.html"><i class="fas fa-truck"></i><span>Vendors</span></a>
+<a class="nav-item active" href="quotations.html"><i class="fas fa-file-alt"></i><span>Quotations</span></a>
+<a class="nav-item" href="invoices.html"><i class="fas fa-file-invoice-dollar"></i><span>Invoices</span></a>
+<a class="nav-item" href="payments.html"><i class="fas fa-money-check-alt"></i><span>Payments</span></a>
+<a class="nav-item" href="receipts.html"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+<a class="nav-item" href="expenses.html"><i class="fas fa-credit-card"></i><span>Expenses</span></a>
+<a class="nav-item" href="reports.html"><i class="fas fa-chart-pie"></i><span>Reports</span></a>
+<a class="nav-item" href="documents.html"><i class="fas fa-folder-open"></i><span>Documents</span></a>
+<a class="nav-item" href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+</nav>
+</aside>
+
+<div class="main-wrapper">
+<header class="header">
+<div class="header-left">
+<button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+<div class="header-title"><h1>Quotations</h1><p>Thulir Design & QS Services FZE</p></div>
+</div>
+<div class="header-right"><div class="profile-icon">TD</div></div>
+</header>
+<main class="content">
+<div class="page-header">
+<div><h2>Quotation Management</h2></div>
+<button class="btn btn-primary" id="addQuoteBtn"><i class="fas fa-plus"></i> New Quotation</button>
+</div>
+<div class="summary-grid" id="summaryCards"></div>
+<div class="filter-bar">
+<div style="position:relative"><input type="text" class="search-input" id="searchInput" placeholder="Search quotations..."></div>
+<div class="filter-pills" id="filterPills">
+<button class="filter-pill active" data-filter="All">All</button>
+<button class="filter-pill" data-filter="Draft">Draft</button>
+<button class="filter-pill" data-filter="Sent">Sent</button>
+<button class="filter-pill" data-filter="Approved">Approved</button>
+<button class="filter-pill" data-filter="Rejected">Rejected</button>
+<button class="filter-pill" data-filter="Cancelled">Cancelled</button>
+</div>
+</div>
+<div class="table-card">
+<div class="table-container">
+<table>
+<thead><tr><th>Quotation No.</th><th>Date</th><th>Client</th><th>Project</th><th>Scope</th><th>Amount</th><th>VAT</th><th>Total</th><th>Status</th><th style="width:80px">Action</th></tr></thead>
+<tbody id="quoteTableBody"></tbody>
+</table>
+</div>
+<div class="no-results" id="noResults" style="display:none"><i class="fas fa-search"></i><p>No quotations found</p></div>
+</div>
+</main>
+</div>
+
+<!-- NEW QUOTATION MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<div class="modal-header"><h2>New Quotation</h2><button class="modal-close" id="modalClose">&times;</button></div>
+<div class="modal-body">
+<div class="form-section">
+<div class="form-section-title"><i class="fas fa-file-alt"></i> Quotation Information</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Quotation Number</label><input type="text" class="form-input" id="fQuoteNo" readonly></div>
+<div class="form-group"><label class="form-label">Quotation Date</label><input type="date" class="form-input" id="fDate"></div>
+<div class="form-group"><label class="form-label">Validity</label><select class="form-select" id="fValidity"><option>30 Days</option><option>15 Days</option><option>45 Days</option><option>60 Days</option><option>90 Days</option></select></div>
+<div class="form-group"><label class="form-label">Client</label><select class="form-select" id="fClient"><option value="">Select Client</option></select><div class="form-error" id="errClient">Select a client</div></div>
+<div class="form-group span-2"><label class="form-label">Project</label><select class="form-select" id="fProject"><option value="">Select Project</option></select></div>
+</div>
+</div>
+<div class="form-section">
+<div class="form-section-title"><i class="fas fa-drafting-compass"></i> Scope Details</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Service Type</label><select class="form-select" id="fService"><option value="">Select Type</option><option>Rebar Detailing</option><option>Structural Design</option><option>Architecture</option><option>QS / BOQ</option><option>Estimation</option><option>Other</option></select><div class="form-error" id="errService">Select service type</div></div>
+<div class="form-group span-2"><label class="form-label">Scope Description</label><textarea class="form-textarea" id="fScopeDesc" rows="3" placeholder="Describe the scope of work..."></textarea></div>
+</div>
+</div>
+<div class="form-section">
+<div class="form-section-title"><i class="fas fa-list-ol"></i> Quotation Items</div>
+<table class="items-table">
+<thead><tr><th style="width:40%">Description</th><th style="width:10%">Qty</th><th style="width:15%">Unit</th><th style="width:15%">Rate (AED)</th><th style="width:15%">Amount</th><th style="width:5%"></th></tr></thead>
+<tbody id="itemsBody"></tbody>
+</table>
+<button class="add-item-btn" onclick="addItem()"><i class="fas fa-plus"></i> Add Item</button>
+<div class="commercial-summary">
+<div class="comm-row"><span class="label">Subtotal</span><span class="val" id="cSubtotal">AED 0</span></div>
+<div class="comm-row"><span class="label">Discount (AED)</span><span class="val"><input type="number" id="fDiscount" min="0" value="0" style="width:100px;padding:4px 8px;border:1px solid var(--g300);border-radius:4px;font-size:13px;text-align:right" oninput="calcCommercial()"></span></div>
+<div class="comm-row"><span class="label">VAT (AED)</span><span class="val"><input type="number" id="fVat" min="0" value="0" style="width:100px;padding:4px 8px;border:1px solid var(--g300);border-radius:4px;font-size:13px;text-align:right" oninput="calcCommercial()"></span></div>
+<div class="comm-row total"><span class="label">Total Quotation Amount</span><span class="val" id="cTotal">AED 0</span></div>
+</div>
+</div>
+<div class="form-section">
+<div class="form-section-title"><i class="fas fa-credit-card"></i> Payment Terms</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Payment Terms</label><select class="form-select" id="fPayTerms"><option>100% After Completion</option><option>50% Advance + 50% Completion</option><option>Monthly Payment</option><option>Custom</option></select></div>
+<div class="form-group span-2"><label class="form-label">Payment Notes</label><textarea class="form-textarea" id="fPayNotes" rows="2" placeholder="Additional payment notes..."></textarea></div>
+</div>
+</div>
+<div class="form-section">
+<div class="form-section-title"><i class="fas fa-gavel"></i> Terms & Conditions</div>
+<textarea class="form-textarea" id="fTerms" rows="4" style="width:100%">1. Work will commence after approval of this quotation.
+2. Payment as per agreed terms mentioned above.
+3. Additional scope will be charged separately.
+4. This quotation is valid for the period mentioned above.</textarea>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+<button class="btn btn-secondary" onclick="saveAsDraft()"><i class="fas fa-save"></i> Save as Draft</button>
+<button class="btn btn-primary" id="saveBtn"><i class="fas fa-paper-plane"></i> Save & Send</button>
+</div>
+</div>
+</div>
+
+<!-- DETAIL DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+<div class="drawer-header">
+<div class="drawer-info">
+<div class="drawer-top"><span class="code-badge" id="dQuoteNo"></span><span class="drawer-name" id="dClient"></span></div>
+<div class="drawer-meta"><span class="status-pill" id="dStatus"></span><span style="font-size:14px;font-weight:700;color:var(--fg)" id="dTotal"></span></div>
+<div class="drawer-quick-actions" id="dQuickActions"></div>
+</div>
+<button class="modal-close" id="drawerClose">&times;</button>
+</div>
+<div class="drawer-tabs">
+<button class="dtab active" data-dtab="overview">Overview</button>
+<button class="dtab" data-dtab="items">Items</button>
+<button class="dtab" data-dtab="terms">Terms</button>
+<button class="dtab" data-dtab="activities">Activities</button>
+</div>
+<div class="drawer-body">
+<div class="dtab-content active" id="dtab-overview"></div>
+<div class="dtab-content" id="dtab-items"></div>
+<div class="dtab-content" id="dtab-terms"></div>
+<div class="dtab-content" id="dtab-activities"></div>
+</div>
+</div>
+
+<!-- PRINT AREA -->
+<div class="print-area" id="printArea"></div>
+
+<script>
+const CLIENTS=["ABC Construction LLC","XYZ Builders FZCO","Delta Group Contracting","SkyHigh LLC","Coastline Constructions","Gulf Engineering Consultants","Emirates Structural Co.","Al Naboodah Contracting LLC"];
+const PROJECTS=["Dubai Villa Rebar Work","Marina Tower Structural Design","Al Mamzar Villa QS","JBR Apartment Architecture","Palm Jumeirah Estimation","Downtown Tower Rebar","SZR Structural","Naboodah Complex BOQ","Business Bay Tower Design","Deira Villa Rebar"];
+const UNITS=["Sheet","Ton","Lump Sum","Hour","Month"];
+
+const DEFAULT_QUOTES=[
+{id:"QT-001",date:"2026-07-28",client:"ABC Construction LLC",project:"Dubai Villa Rebar Work",serviceType:"Rebar Detailing",scopeDesc:"Preparation of reinforcement shop drawings and bar bending schedule for ground and first floor.",items:[{desc:"Ground Floor Rebar Detailing",qty:25,unit:"Sheet",rate:800,amount:20000},{desc:"First Floor Rebar Detailing",qty:20,unit:"Sheet",rate:800,amount:16000}],subtotal:36000,discount:0,vat:1800,total:37800,payTerms:"50% Advance + 50% Completion",payNotes:"",terms:"1. Work will commence after approval.\n2. Payment as per agreed terms.\n3. Additional scope charged separately.",status:"Approved",activities:[{date:"29-Jul-2026",text:"Quotation sent to client"},{date:"28-Jul-2026",text:"Quotation created"}]},
+{id:"QT-002",date:"2026-07-25",client:"XYZ Builders FZCO",project:"Marina Tower Structural Design",serviceType:"Structural Design",scopeDesc:"Complete structural design and calculation report for 30-storey tower.",items:[{desc:"Structural Analysis & Design",qty:1,unit:"Lump Sum",rate:100000,amount:100000},{desc:"Structural Calculation Report",qty:1,unit:"Lump Sum",rate:20000,amount:20000}],subtotal:120000,discount:0,vat:6000,total:126000,payTerms:"100% After Completion",payNotes:"",terms:"1. Work will commence after approval.\n2. Payment as per agreed terms.",status:"Approved",activities:[{date:"28-Jul-2026",text:"Quotation approved by client"},{date:"25-Jul-2026",text:"Quotation created"}]},
+{id:"QT-003",date:"2026-07-20",client:"Delta Group Contracting",project:"Al Mamzar Villa QS",serviceType:"QS / BOQ",scopeDesc:"Quantity surveying and bill of quantities preparation for residential villa.",items:[{desc:"BOQ Preparation",qty:1,unit:"Lump Sum",rate:30000,amount:30000},{desc:"Quantity Take-off",qty:1,unit:"Lump Sum",rate:5000,amount:5000}],subtotal:35000,discount:0,vat:1750,total:36750,payTerms:"100% After Completion",payNotes:"",terms:"Standard terms apply.",status:"Sent",activities:[{date:"22-Jul-2026",text:"Quotation sent to client"},{date:"20-Jul-2026",text:"Quotation created"}]},
+{id:"QT-004",date:"2026-07-18",client:"SkyHigh LLC",project:"JBR Apartment Architecture",serviceType:"Architecture",scopeDesc:"Architectural design and drawings for 2-bedroom apartment.",items:[{desc:"Architectural Floor Plans",qty:1,unit:"Lump Sum",rate:60000,amount:60000},{desc:"3D Visualization",qty:1,unit:"Lump Sum",rate:15000,amount:15000},{desc:"Interior Layout Plans",qty:1,unit:"Lump Sum",rate:10000,amount:10000}],subtotal:85000,discount:0,vat:4250,total:89250,payTerms:"50% Advance + 50% Completion",payNotes:"50% advance upon approval, 50% on completion.",terms:"1. Work will commence after approval.\n2. Payment as per agreed terms.",status:"Sent",activities:[{date:"19-Jul-2026",text:"Quotation sent to client"},{date:"18-Jul-2026",text:"Quotation created"}]},
+{id:"QT-005",date:"2026-07-15",client:"Coastline Constructions",project:"Palm Jumeirah Estimation",serviceType:"Estimation",scopeDesc:"Cost estimation for villa renovation project.",items:[{desc:"Detailed Cost Estimation",qty:1,unit:"Lump Sum",rate:20000,amount:20000},{desc:"Material Cost Breakdown",qty:1,unit:"Lump Sum",rate:5000,amount:5000}],subtotal:25000,discount:0,vat:1250,total:26250,payTerms:"100% After Completion",payNotes:"",terms:"Standard terms apply.",status:"Draft",activities:[{date:"15-Jul-2026",text:"Quotation created as draft"}]},
+{id:"QT-006",date:"2026-07-12",client:"ABC Construction LLC",project:"Downtown Tower Rebar",serviceType:"Rebar Detailing",scopeDesc:"Rebar shop drawings for basement to 5th floor of commercial tower.",items:[{desc:"Basement Rebar Detailing",qty:30,unit:"Sheet",rate:900,amount:27000},{desc:"Ground to 5th Floor Rebar",qty:50,unit:"Sheet",rate:900,amount:45000}],subtotal:72000,discount:2000,vat:3500,total:73500,payTerms:"Monthly Payment",payNotes:"Monthly invoicing based on sheets completed.",terms:"1. Work will commence after approval.\n2. Monthly payment terms.\n3. Additional scope charged separately.",status:"Approved",activities:[{date:"15-Jul-2026",text:"Quotation approved"},{date:"13-Jul-2026",text:"Quotation sent to client"},{date:"12-Jul-2026",text:"Quotation created"}]},
+{id:"QT-007",date:"2026-07-10",client:"Emirates Structural Co.",project:"SZR Structural",serviceType:"Structural Design",scopeDesc:"Structural design for commercial building on Sheikh Zayed Road.",items:[{desc:"Structural Design Package",qty:1,unit:"Lump Sum",rate:80000,amount:80000},{desc:"Design Coordination",qty:1,unit:"Lump Sum",rate:15000,amount:15000}],subtotal:95000,discount:0,vat:4750,total:99750,payTerms:"100% After Completion",payNotes:"",terms:"Standard terms apply.",status:"Rejected",activities:[{date:"01-Jul-2026",text:"Quotation rejected by client"},{date:"11-Jul-2026",text:"Quotation sent to client"},{date:"10-Jul-2026",text:"Quotation created"}]},
+{id:"QT-008",date:"2026-07-08",client:"Al Naboodah Contracting LLC",project:"Naboodah Complex BOQ",serviceType:"QS / BOQ",scopeDesc:"Bill of quantities for mixed-use complex.",items:[{desc:"BOQ Preparation — Civil",qty:1,unit:"Lump Sum",rate:30000,amount:30000},{desc:"BOQ Preparation — MEP Coordination",qty:1,unit:"Lump Sum",rate:12000,amount:12000}],subtotal:42000,discount:0,vat:2100,total:44100,payTerms:"100% After Completion",payNotes:"",terms:"Standard terms apply.",status:"Approved",activities:[{date:"10-Jul-2026",text:"Quotation approved"},{date:"09-Jul-2026",text:"Quotation sent to client"},{date:"08-Jul-2026",text:"Quotation created"}]},
+{id:"QT-009",date:"2026-07-05",client:"Gulf Engineering Consultants",project:"Business Bay Tower Design",serviceType:"Structural Design",scopeDesc:"Structural design and detailing for 40-storey commercial tower.",items:[{desc:"Structural Analysis",qty:1,unit:"Lump Sum",rate:85000,amount:85000},{desc:"Design Drawings",qty:1,unit:"Lump Sum",rate:25000,amount:25000}],subtotal:110000,discount:5000,vat:5250,total:110250,payTerms:"50% Advance + 50% Completion",payNotes:"50% advance, 50% on submission.",terms:"1. Work will commence after approval.\n2. Payment as per agreed terms.",status:"Draft",activities:[{date:"05-Jul-2026",text:"Quotation created as draft"}]},
+{id:"QT-010",date:"2026-07-01",client:"Al Naboodah Contracting LLC",project:"Deira Villa Rebar",serviceType:"Rebar Detailing",scopeDesc:"Rebar detailing for residential villa in Deira.",items:[{desc:"Complete Villa Rebar Detailing",qty:15,unit:"Sheet",rate:800,amount:12000},{desc:"Bar Bending Schedule",qty:1,unit:"Lump Sum",rate:3000,amount:3000}],subtotal:15000,discount:0,vat:750,total:15750,payTerms:"100% After Completion",payNotes:"",terms:"Standard terms apply.",status:"Cancelled",activities:[{date:"05-Jul-2026",text:"Quotation cancelled"},{date:"02-Jul-2026",text:"Quotation sent to client"},{date:"01-Jul-2026",text:"Quotation created"}]}
+];
+
+let quotes=loadQuotes();
+let currentFilter="All";
+let searchQuery="";
+let formItems=[{desc:"",qty:1,unit:"Lump Sum",rate:0,amount:0}];
+let currentDrawerId=null;
+
+function loadQuotes(){try{const d=localStorage.getItem('tdqs_quotations');return d?JSON.parse(d):JSON.parse(JSON.stringify(DEFAULT_QUOTES))}catch{return JSON.parse(JSON.stringify(DEFAULT_QUOTES))}}
+function saveQuotes(){localStorage.setItem('tdqs_quotations',JSON.stringify(quotes))}
+function fmt(n){return "AED "+Number(n||0).toLocaleString()}
+function statusClass(s){return{Draft:'sp-draft',Sent:'sp-sent',Approved:'sp-approved',Rejected:'sp-rejected',Cancelled:'sp-cancelled'}[s]||'sp-draft'}
+function nextId(){const nums=quotes.map(q=>parseInt(q.id.split('-')[1])||0);return "QT-"+String(Math.max(0,...nums)+1).padStart(3,'0')}
+function today(){return new Date().toISOString().split('T')[0]}
+
+function renderSummary(){
+const total=quotes.length;
+const draft=quotes.filter(q=>q.status==='Draft').length;
+const approved=quotes.filter(q=>q.status==='Approved').length;
+const value=quotes.filter(q=>q.status!=='Cancelled'&&q.status!=='Rejected').reduce((a,q)=>a+q.total,0);
+document.getElementById('summaryCards').innerHTML=`
+<div class="summary-card ${currentFilter==='All'?'active-filter':''}" onclick="applyFilter('All')"><div class="sc-title">Total Quotations</div><div class="sc-value">${total}</div></div>
+<div class="summary-card ${currentFilter==='Draft'?'active-filter':''}" onclick="applyFilter('Draft')"><div class="sc-title">Draft Quotations</div><div class="sc-value">${draft}</div></div>
+<div class="summary-card ${currentFilter==='Approved'?'active-filter':''}" onclick="applyFilter('Approved')"><div class="sc-title">Approved Quotations</div><div class="sc-value">${approved}</div></div>
+<div class="summary-card"><div class="sc-title">Total Quotation Value</div><div class="sc-value">${fmt(value)}</div><div class="sc-sub">Excluding rejected & cancelled</div></div>`;
+}
+function applyFilter(f){currentFilter=f;document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p.dataset.filter===f));renderSummary();renderTable()}
+
+function getFiltered(){
+return quotes.filter(q=>{
+const mf=currentFilter==='All'||q.status===currentFilter;
+const s=searchQuery.toLowerCase();
+const ms=!s||q.id.toLowerCase().includes(s)||q.client.toLowerCase().includes(s)||q.project.toLowerCase().includes(s)||q.serviceType.toLowerCase().includes(s);
+return mf&&ms});
+}
+
+function renderTable(){
+const filtered=getFiltered();
+const tbody=document.getElementById('quoteTableBody');
+const noRes=document.getElementById('noResults');
+if(!filtered.length){tbody.innerHTML='';noRes.style.display='block';return}
+noRes.style.display='none';
+tbody.innerHTML=filtered.map(q=>`<tr>
+<td><span class="code-badge">${q.id}</span></td>
+<td style="color:var(--g700);font-size:13px">${q.date}</td>
+<td style="font-weight:500;min-width:160px">${q.client}</td>
+<td style="color:var(--g700);min-width:140px">${q.project}</td>
+<td><span class="type-tag">${q.serviceType}</span></td>
+<td style="font-weight:600">${fmt(q.subtotal)}</td>
+<td style="color:var(--g500)">${fmt(q.vat)}</td>
+<td style="font-weight:700">${fmt(q.total)}</td>
+<td><span class="status-pill ${statusClass(q.status)}">${q.status}</span></td>
+<td><div class="action-btns"><button class="action-btn" title="View" onclick="openDrawer('${q.id}')"><i class="fas fa-eye"></i></button></div></td>
+</tr>`).join('');
+}
+
+// ── FORM ITEMS ──
+function renderItems(){
+const body=document.getElementById('itemsBody');
+body.innerHTML=formItems.map((item,i)=>`<tr>
+<td><input type="text" value="${item.desc}" placeholder="Description" onchange="formItems[${i}].desc=this.value"></td>
+<td><input type="number" value="${item.qty}" min="0" onchange="updateItem(${i},'qty',this.value)"></td>
+<td><select onchange="formItems[${i}].unit=this.value">${UNITS.map(u=>`<option ${u===item.unit?'selected':''}>${u}</option>`).join('')}</select></td>
+<td><input type="number" value="${item.rate}" min="0" onchange="updateItem(${i},'rate',this.value)"></td>
+<td style="font-weight:600;padding:8px 10px">${fmt(item.amount)}</td>
+<td><button class="remove-item" onclick="removeItem(${i})" ${formItems.length<=1?'disabled style="opacity:.3;cursor:not-allowed"':''}><i class="fas fa-times"></i></button></td>
+</tr>`).join('');
+calcCommercial();
+}
+function addItem(){formItems.push({desc:"",qty:1,unit:"Lump Sum",rate:0,amount:0});renderItems()}
+function removeItem(i){if(formItems.length<=1)return;formItems.splice(i,1);renderItems()}
+function updateItem(i,field,val){formItems[i][field]=Number(val)||0;formItems[i].amount=formItems[i].qty*formItems[i].rate;renderItems()}
+function calcCommercial(){
+const sub=formItems.reduce((a,item)=>a+item.amount,0);
+const disc=Number(document.getElementById('fDiscount').value)||0;
+const vat=Number(document.getElementById('fVat').value)||0;
+document.getElementById('cSubtotal').textContent=fmt(sub);
+document.getElementById('cTotal').textContent=fmt(sub+vat-disc);
+}
+
+// ── MODAL ──
+function openModal(){
+document.getElementById('fQuoteNo').value=nextId();
+document.getElementById('fDate').value=today();
+document.getElementById('fValidity').selectedIndex=0;
+document.getElementById('fClient').selectedIndex=0;
+document.getElementById('fProject').innerHTML='<option value="">Select Project</option>';
+document.getElementById('fService').selectedIndex=0;
+document.getElementById('fScopeDesc').value='';
+document.getElementById('fDiscount').value='0';
+document.getElementById('fVat').value='0';
+document.getElementById('fPayTerms').selectedIndex=0;
+document.getElementById('fPayNotes').value='';
+document.getElementById('fTerms').value='1. Work will commence after approval of this quotation.\n2. Payment as per agreed terms mentioned above.\n3. Additional scope will be charged separately.\n4. This quotation is valid for the period mentioned above.';
+formItems=[{desc:"",qty:1,unit:"Lump Sum",rate:0,amount:0}];
+renderItems();
+document.querySelectorAll('.form-error').forEach(e=>e.style.display='none');
+document.querySelectorAll('.form-input.error,.form-select.error').forEach(e=>e.classList.remove('error'));
+document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
+
+function buildQuote(status){
+const sub=formItems.reduce((a,item)=>a+item.amount,0);
+const disc=Number(document.getElementById('fDiscount').value)||0;
+const vat=Number(document.getElementById('fVat').value)||0;
+return {
+id:document.getElementById('fQuoteNo').value,
+date:document.getElementById('fDate').value,
+client:document.getElementById('fClient').value,
+project:document.getElementById('fProject').value,
+serviceType:document.getElementById('fService').value,
+scopeDesc:document.getElementById('fScopeDesc').value,
+items:JSON.parse(JSON.stringify(formItems)),
+subtotal:sub,discount:disc,vat:vat,total:sub+vat-disc,
+payTerms:document.getElementById('fPayTerms').value,
+payNotes:document.getElementById('fPayNotes').value,
+terms:document.getElementById('fTerms').value,
+status:status,
+activities:[{date:new Date().toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'}),text:status==='Draft'?'Quotation created as draft':'Quotation created and sent to client'}]
+};
+}
+
+function saveAsDraft(){
+let valid=true;
+if(!document.getElementById('fClient').value){document.getElementById('errClient').style.display='block';document.getElementById('fClient').classList.add('error');valid=false}
+if(!document.getElementById('fService').value){document.getElementById('errService').style.display='block';document.getElementById('fService').classList.add('error');valid=false}
+if(!valid)return;
+quotes.unshift(buildQuote('Draft'));saveQuotes();closeModal();renderSummary();renderTable();showToast('Quotation saved as draft');
+}
+
+document.getElementById('saveBtn').addEventListener('click',()=>{
+let valid=true;
+if(!document.getElementById('fClient').value){document.getElementById('errClient').style.display='block';document.getElementById('fClient').classList.add('error');valid=false}
+if(!document.getElementById('fService').value){document.getElementById('errService').style.display='block';document.getElementById('fService').classList.add('error');valid=false}
+if(!valid)return;
+quotes.unshift(buildQuote('Sent'));saveQuotes();closeModal();renderSummary();renderTable();showToast('Quotation saved and sent');
+});
+
+document.getElementById('fClient').addEventListener('change',function(){document.getElementById('errClient').style.display='none';this.classList.remove('error')});
+document.getElementById('fService').addEventListener('change',function(){document.getElementById('errService').style.display='none';this.classList.remove('error')});
+
+// ── DRAWER ──
+function openDrawer(id){
+const q=quotes.find(x=>x.id===id);if(!q)return;
+currentDrawerId=id;
+document.getElementById('dQuoteNo').textContent=q.id;
+document.getElementById('dClient').textContent=q.client;
+document.getElementById('dStatus').textContent=q.status;document.getElementById('dStatus').className='status-pill '+statusClass(q.status);
+document.getElementById('dTotal').textContent=fmt(q.total);
+
+let actions=`<button class="btn btn-outline btn-sm" onclick="openModal()"><i class="fas fa-plus"></i> New Quotation</button>`;
+actions+=`<button class="btn btn-secondary btn-sm" onclick="duplicateQuote('${q.id}')"><i class="fas fa-copy"></i> Duplicate</button>`;
+if(q.status==='Sent')actions+=`<button class="btn btn-secondary btn-sm" onclick="updateStatus('${q.id}','Approved')"><i class="fas fa-check"></i> Mark Approved</button>`;
+if(q.status==='Approved')actions+=`<button class="btn btn-primary btn-sm" onclick="convertToInvoice('${q.id}')"><i class="fas fa-file-invoice-dollar"></i> Convert to Invoice</button>`;
+if(q.status!=='Cancelled')actions+=`<button class="btn btn-secondary btn-sm" onclick="printQuote('${q.id}')"><i class="fas fa-print"></i> Print</button>`;
+document.getElementById('dQuickActions').innerHTML=actions;
+
+document.getElementById('dtab-overview').innerHTML=`<div class="detail-grid">
+<div class="detail-item"><div class="detail-label">Date</div><div class="detail-value">${q.date}</div></div>
+<div class="detail-item"><div class="detail-label">Validity</div><div class="detail-value">${q.payTerms||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Project</div><div class="detail-value">${q.project||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Service Type</div><div class="detail-value">${q.serviceType}</div></div>
+<div class="detail-item detail-full"><div class="detail-label">Scope Description</div><div class="detail-value" style="font-size:13px;font-weight:400;line-height:1.6">${q.scopeDesc||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Subtotal</div><div class="detail-value">${fmt(q.subtotal)}</div></div>
+<div class="detail-item"><div class="detail-label">Discount</div><div class="detail-value">${fmt(q.discount)}</div></div>
+<div class="detail-item"><div class="detail-label">VAT</div><div class="detail-value">${fmt(q.vat)}</div></div>
+<div class="detail-item"><div class="detail-label">Total Amount</div><div class="detail-value highlight">${fmt(q.total)}</div></div>
+<div class="detail-item detail-full"><div class="detail-label">Payment Terms</div><div class="detail-value">${q.payTerms}</div></div>
+ ${q.payNotes?`<div class="detail-item detail-full"><div class="detail-label">Payment Notes</div><div class="detail-value" style="font-size:13px;font-weight:400">${q.payNotes}</div></div>`:''}
+</div>`;
+
+document.getElementById('dtab-items').innerHTML=q.items.length?`<table class="mini-table"><thead><tr><th>Description</th><th>Qty</th><th>Unit</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th></tr></thead><tbody>${q.items.map(it=>`<tr><td>${it.desc||'—'}</td><td>${it.qty}</td><td>${it.unit}</td><td style="text-align:right">${fmt(it.rate)}</td><td style="text-align:right;font-weight:600">${fmt(it.amount)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty-state"><i class="fas fa-list"></i>No items</div>';
+
+document.getElementById('dtab-terms').innerHTML=`<div style="white-space:pre-line;font-size:14px;color:var(--g700);line-height:1.8">${q.terms||'No terms specified.'}</div>`;
+
+document.getElementById('dtab-activities').innerHTML=q.activities.length?`<div class="timeline">${q.activities.map(a=>`<div class="tl-item"><div class="tl-dot"></div><div class="tl-date">${a.date}</div><div class="tl-text">${a.text}</div></div>`).join('')}</div>`:'<div class="empty-state"><i class="fas fa-clock"></i>No activities yet</div>';
+
+document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.dataset.dtab==='overview'));
+document.querySelectorAll('.dtab-content').forEach(c=>c.classList.toggle('active',c.id==='dtab-overview'));
+document.getElementById('drawer').classList.add('open');document.getElementById('drawerOverlay').classList.add('open');
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open');currentDrawerId=null}
+
+function updateStatus(id,status){
+const q=quotes.find(x=>x.id===id);if(!q)return;
+q.status=status;
+q.activities.unshift({date:new Date().toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'}),text:'Quotation marked as '+status});
+saveQuotes();renderSummary();renderTable();openDrawer(id);showToast('Quotation '+id+' marked as '+status);
+}
+
+function duplicateQuote(id){
+const q=quotes.find(x=>x.id===id);if(!q)return;
+const nq=JSON.parse(JSON.stringify(q));
+nq.id=nextId();nq.date=today();nq.status='Draft';
+nq.activities=[{date:new Date().toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'}),text:'Quotation duplicated from '+q.id}];
+quotes.unshift(nq);saveQuotes();renderSummary();renderTable();showToast('Quotation duplicated as '+nq.id);
+}
+
+function convertToInvoice(id){
+const q=quotes.find(x=>x.id===id);if(!q)return;
+q.activities.unshift({date:new Date().toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'}),text:'Converted to Invoice — Navigate to Invoices module'});
+saveQuotes();renderSummary();renderTable();openDrawer(id);showToast('Quotation '+q.id+' converted to invoice. See Invoices module.');
+}
+
+function printQuote(id){
+const q=quotes.find(x=>x.id===id);if(!q)return;
+document.getElementById('printArea').innerHTML=`
+<div class="print-header"><h1>THULIR Design & QS Services FZE</h1><p>Construction Design & Quantity Surveying</p></div>
+<div class="print-info"><div><strong>Quotation No:</strong> ${q.id}<br><strong>Date:</strong> ${q.date}<br><strong>Validity:</strong> ${q.payTerms||'As specified'}</div>
+<div style="text-align:right"><strong>Client:</strong> ${q.client}<br><strong>Project:</strong> ${q.project||'—'}<br><strong>Scope:</strong> ${q.serviceType}</div></div>
+<div style="margin-bottom:16px"><strong>Scope Description:</strong><p style="font-size:13px;color:#424242;margin-top:4px">${q.scopeDesc||'—'}</p></div>
+<table class="print-items"><thead><tr><th>#</th><th>Description</th><th>Qty</th><th>Unit</th><th style="text-align:right">Rate (AED)</th><th style="text-align:right">Amount (AED)</th></tr></thead>
+<tbody>${q.items.map((it,i)=>`<tr><td>${i+1}</td><td>${it.desc||'—'}</td><td>${it.qty}</td><td>${it.unit}</td><td style="text-align:right">${Number(it.rate).toLocaleString()}</td><td style="text-align:right">${Number(it.amount).toLocaleString()}</td></tr>`).join('')}</tbody></table>
+<div style="display:flex;justify-content:flex-end"><div style="width:300px">
+<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px"><span>Subtotal</span><span>AED ${Number(q.subtotal).toLocaleString()}</span></div>
+ ${q.discount?`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px"><span>Discount</span><span>AED ${Number(q.discount).toLocaleString()}</span></div>`:''}
+<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px"><span>VAT</span><span>AED ${Number(q.vat).toLocaleString()}</span></div>
+<div style="display:flex;justify-content:space-between;padding:10px 0;font-size:16px;font-weight:700;border-top:2px solid #212121;margin-top:6px"><span>Total</span><span>AED ${Number(q.total).toLocaleString()}</span></div>
+</div></div>
+<div class="print-terms"><h3>Terms & Conditions</h3><div style="white-space:pre-line">${q.terms||''}</div></div>
+<div class="print-sign"><div class="print-sign-line">Authorized Signature</div></div>`;
+setTimeout(()=>window.print(),200);
+}
+
+// ── EVENTS ──
+document.getElementById('addQuoteBtn').addEventListener('click',openModal);
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('cancelBtn').addEventListener('click',closeModal);
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+document.getElementById('drawerClose').addEventListener('click',closeDrawer);
+document.getElementById('drawerOverlay').addEventListener('click',closeDrawer);
+document.getElementById('searchInput').addEventListener('input',e=>{searchQuery=e.target.value;renderTable()});
+document.querySelectorAll('.filter-pill').forEach(pill=>{pill.addEventListener('click',()=>{currentFilter=pill.dataset.filter;document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p===pill));renderSummary();renderTable()})});
+document.querySelectorAll('.dtab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.dtab-content').forEach(c=>c.classList.remove('active'));tab.classList.add('active');document.getElementById('dtab-'+tab.dataset.dtab).classList.add('active')})});
+
+// Populate dropdowns
+const fc=document.getElementById('fClient');
+CLIENTS.forEach(c=>{const o=document.createElement('option');o.textContent=c;fc.appendChild(o)});
+fc.addEventListener('change',function(){document.getElementById('fProject').innerHTML='<option value="">Select Project</option>';PROJECTS.forEach(p=>{const o=document.createElement('option');o.textContent=p;document.getElementById('fProject').appendChild(o)})});
+
+// Sidebar
+const sidebar=document.getElementById('sidebar'),mobileToggle=document.getElementById('mobileToggle'),overlay=document.getElementById('sidebarOverlay');
+mobileToggle.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('active')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('active')});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',e=>{document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));e.currentTarget.classList.add('active');if(window.innerWidth<=768){sidebar.classList.remove('open');overlay.classList.remove('active')}})});
+
+function showToast(msg,type='success'){const t=document.createElement('div');t.className='toast toast-'+type;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3000)}
+
+renderSummary();renderTable();
+</script>
+</body>
+</html>
