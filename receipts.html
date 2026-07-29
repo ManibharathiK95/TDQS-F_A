@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDQS - Receipts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--fg:#1B5E20;--fh:#2E7D32;--fl:#E8F5E9;--fm:#4CAF50;--w:#FFF;--bk:#121212;--g50:#FAFAFA;--g100:#F5F5F5;--g200:#EEE;--g300:#E0E0E0;--g500:#757575;--g700:#424242;--g900:#212121;--sw:70px;--swe:240px;--hh:64px;--red:#C62828;--blue:#1565C0;--orange:#F57C00}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--g100);color:var(--g900);overflow:hidden;height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sw);background:var(--bk);color:var(--w);z-index:1000;transition:width .3s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;flex-direction:column}
+.sidebar:hover{width:var(--swe)}
+.sidebar-logo{height:var(--hh);display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);gap:12px;white-space:nowrap}
+.sidebar-logo i{font-size:24px;color:var(--fm);min-width:30px;text-align:center}
+.sidebar-logo span{font-family:'Playfair Display',serif;font-size:18px;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .sidebar-logo span{opacity:1}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto;overflow-x:hidden}
+.nav-item{display:flex;align-items:center;padding:12px 20px;color:var(--g300);text-decoration:none;gap:12px;cursor:pointer;transition:all .2s;white-space:nowrap;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--w)}
+.nav-item.active{background:rgba(27,94,32,.2);color:var(--fm);border-left-color:var(--fm)}
+.nav-item i{font-size:18px;min-width:30px;text-align:center}
+.nav-item span{font-size:14px;font-weight:500;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .nav-item span{opacity:1}
+.main-wrapper{margin-left:var(--sw);height:100vh;display:flex;flex-direction:column;transition:margin-left .3s}
+.header{height:var(--hh);background:var(--w);border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:500;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:16px}
+.mobile-toggle{display:none;background:none;border:none;font-size:20px;color:var(--g700);cursor:pointer}
+.header-title h1{font-size:18px;font-weight:700;color:var(--bk)}
+.header-title p{font-size:12px;color:var(--g500)}
+.header-right{display:flex;align-items:center;gap:16px}
+.profile-icon{width:36px;height:36px;border-radius:50%;background:var(--fg);color:var(--w);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;cursor:pointer}
+.content{flex:1;overflow-y:auto;padding:24px;background:var(--g100)}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-header h2{font-size:22px;font-weight:700}
+.btn{padding:10px 20px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--fg);color:var(--w)}.btn-primary:hover{background:var(--fh)}
+.btn-secondary{background:var(--g100);color:var(--g700);border:1px solid var(--g300)}.btn-secondary:hover{background:var(--g200)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-outline{background:transparent;color:var(--fg);border:1px solid var(--fg)}.btn-outline:hover{background:var(--fl)}
+.filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.search-input{padding:8px 14px 8px 36px;border:1px solid var(--g300);border-radius:6px;font-size:14px;outline:none;width:280px;background:var(--w) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23757575' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E") 10px center/16px no-repeat;transition:border-color .2s}
+.search-input:focus{border-color:var(--fg)}
+.filter-pills{display:flex;gap:0;border:1px solid var(--g300);border-radius:6px;overflow:hidden}
+.filter-pill{padding:8px 16px;border:none;background:var(--w);font-size:13px;font-weight:500;color:var(--g500);cursor:pointer;transition:all .2s;white-space:nowrap}
+.filter-pill:hover{color:var(--fg)}.filter-pill.active{background:var(--fg);color:var(--w)}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px}
+.summary-card{background:var(--w);border-radius:8px;padding:20px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.summary-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+.summary-card.active-filter{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.summary-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.sc-total::before{background:var(--fg)}.sc-month::before{background:var(--blue)}.sc-pending::before{background:var(--orange)}.sc-collected::before{background:var(--fh)}
+.sc-title{font-size:13px;color:var(--g500);font-weight:500;margin-bottom:8px}
+.sc-value{font-size:28px;font-weight:700}
+.sc-total .sc-value{color:var(--fg)}.sc-month .sc-value{color:var(--blue)}.sc-pending .sc-value{color:var(--orange)}.sc-collected .sc-value{color:var(--fh)}
+.sc-sub{font-size:12px;color:var(--g500);margin-top:4px}
+.table-card{background:var(--w);border-radius:8px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden}
+.table-container{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--g200);font-size:14px}
+th{font-weight:600;color:var(--g500);font-size:12px;text-transform:uppercase;letter-spacing:.5px;background:var(--g50);position:sticky;top:0}
+tr:hover td{background:var(--g50)}
+.code-badge{font-weight:700;color:var(--fg);font-size:13px;background:var(--fl);padding:3px 8px;border-radius:4px}
+.type-tag{font-size:12px;color:var(--g500);background:var(--g100);padding:2px 8px;border-radius:4px}
+.no-results{text-align:center;padding:48px 24px;color:var(--g500)}.no-results i{font-size:48px;margin-bottom:12px;opacity:.3}
+.action-btns{display:flex;gap:6px}
+.action-btn{width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;background:var(--g100);color:var(--g500)}
+.action-btn:hover{background:var(--fl);color:var(--fg)}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--w);border-radius:12px;width:600px;max-width:95vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--g200)}
+.modal-header h2{font-size:18px;font-weight:700}
+.modal-close{width:36px;height:36px;border:none;background:var(--g100);border-radius:50%;cursor:pointer;font-size:18px;color:var(--g500);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:#FFEBEE;color:var(--red)}
+.modal-body{flex:1;overflow-y:auto;padding:24px}
+.form-section{margin-bottom:24px}
+.form-section-title{font-size:15px;font-weight:700;color:var(--fg);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--fl);display:flex;align-items:center;gap:8px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-grid .full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column}
+.form-label{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:6px}
+.form-input,.form-select,.form-textarea{padding:10px 12px;border:1px solid var(--g300);border-radius:6px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:var(--w);color:var(--g900)}
+.form-textarea{resize:vertical;min-height:60px}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--fg)}
+.form-input[readonly]{background:var(--fl);border:1px solid rgba(27,94,32,.2);font-weight:700;color:var(--fg)}
+.form-input.error,.form-select.error{border-color:var(--red)}
+.form-error{font-size:11px;color:var(--red);margin-top:4px;display:none}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;border-top:1px solid var(--g200)}
+.auto-display{background:var(--fl);border:1px solid rgba(27,94,32,.15);border-left:4px solid var(--fg);border-radius:6px;padding:14px 16px;margin-top:8px}
+.auto-display .auto-label{font-size:12px;color:var(--fh);font-weight:500}
+.auto-display .auto-value{font-size:16px;font-weight:700;color:var(--fg);margin-top:2px}
+
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1500}
+.drawer-overlay.open{display:block}
+.drawer{position:fixed;top:0;right:-600px;bottom:0;width:580px;max-width:100vw;background:var(--w);z-index:1501;box-shadow:-4px 0 24px rgba(0,0,0,.15);transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drawer.open{right:0}
+.drawer-header{padding:20px 24px;border-bottom:1px solid var(--g200);display:flex;justify-content:space-between;align-items:flex-start}
+.drawer-info{display:flex;flex-direction:column;gap:8px}
+.drawer-top{display:flex;align-items:center;gap:10px}
+.drawer-name{font-size:18px;font-weight:700}
+.drawer-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.drawer-quick-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.drawer-quick-actions .btn{font-size:12px;padding:6px 12px}
+.drawer-tabs{display:flex;border-bottom:2px solid var(--g200);padding:0 24px;flex-shrink:0;overflow-x:auto}
+.dtab{padding:12px 14px;border:none;background:none;font-size:13px;font-weight:600;color:var(--g500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.dtab:hover{color:var(--fg)}.dtab.active{color:var(--fg);border-bottom-color:var(--fg)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px}
+.dtab-content{display:none}.dtab-content.active{display:block}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.detail-item{padding:12px;background:var(--g50);border-radius:6px}
+.detail-label{font-size:12px;color:var(--g500);margin-bottom:4px}
+.detail-value{font-size:15px;font-weight:600;color:var(--g900)}
+.detail-value.highlight{color:var(--fg);font-size:18px}
+.detail-value.red{color:var(--red)}.detail-value.green{color:var(--fg)}
+.detail-full{grid-column:1/-1}
+.mini-table{width:100%;border-collapse:collapse;margin-top:12px}
+.mini-table th{font-size:11px;padding:8px 10px;background:var(--g100)}
+.mini-table td{font-size:13px;padding:8px 10px}
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--g300)}
+.tl-item{position:relative;margin-bottom:20px}.tl-item:last-child{margin-bottom:0}
+.tl-dot{position:absolute;left:-21px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--fg);border:2px solid var(--w);box-shadow:0 0 0 2px var(--fg)}
+.tl-date{font-size:12px;font-weight:600;color:var(--g500);margin-bottom:4px}
+.tl-text{font-size:14px;color:var(--g700)}.tl-text::before{content:'✓ ';color:var(--fg);font-weight:700}
+.empty-state{text-align:center;padding:24px;color:var(--g500);font-size:13px}.empty-state i{display:block;font-size:32px;opacity:.3;margin-bottom:8px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;color:var(--w);z-index:9999;transition:transform .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}.toast-success{background:var(--fg)}.toast-error{background:var(--red)}
+
+.statement-table{width:100%;border-collapse:collapse;margin-top:12px}
+.statement-table th{font-size:11px;padding:8px 10px;background:var(--g100);text-align:left}
+.statement-table td{font-size:13px;padding:8px 10px}
+.statement-table .amt-right{text-align:right;font-weight:600}
+
+.print-area{display:none}
+@media print{
+body *{visibility:hidden}.print-area,.print-area *{visibility:visible}
+.print-area{position:fixed;left:0;top:0;width:100%;padding:40px;background:#fff;display:block!important}
+.print-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;border-bottom:2px solid var(--bk);padding-bottom:20px}
+.print-header h1{font-size:20px;color:var(--bk)}.print-header p{font-size:13px;color:var(--g500)}
+.print-info{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;font-size:13px;line-height:2}
+.print-info strong{color:var(--bk)}
+.print-amount{background:var(--fl);padding:20px;border-radius:8px;text-align:right;margin:24px 0}
+.print-amount .label{font-size:14px;color:var(--fh)}.print-amount .val{font-size:28px;font-weight:700;color:var(--fg)}
+.print-sign{display:flex;justify-content:space-between;margin-top:60px;font-size:13px}
+.print-sign-line{width:200px;border-top:1px solid var(--bk);text-align:center;padding-top:6px}
+}
+@media(max-width:1024px){.summary-grid{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{width:var(--swe);left:calc(-1*var(--swe))}.sidebar.open{left:0}.sidebar:hover{width:var(--swe)}.sidebar .nav-item span,.sidebar:hover .nav-item span{opacity:1}.sidebar .sidebar-logo span,.sidebar:hover .sidebar-logo span{opacity:1}.main-wrapper{margin-left:0}.mobile-toggle{display:block}.content{padding:16px}.search-input{width:100%}.filter-bar{flex-direction:column;align-items:stretch}.filter-pills{overflow-x:auto}.modal{max-width:100vw;max-height:100vh;border-radius:0}.drawer{width:100vw}.drawer-quick-actions{flex-direction:column}}
+@media(max-width:480px){.summary-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-logo"><i class="fas fa-hard-hat"></i><span>THULIR FZE</span></div>
+<nav class="sidebar-nav">
+<a class="nav-item" href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+<a class="nav-item" href="projects.html"><i class="fas fa-building"></i><span>Projects</span></a>
+<a class="nav-item" href="clients.html"><i class="fas fa-users"></i><span>Clients</span></a>
+<a class="nav-item" href="vendors.html"><i class="fas fa-truck"></i><span>Vendors</span></a>
+<a class="nav-item" href="quotations.html"><i class="fas fa-file-alt"></i><span>Quotations</span></a>
+<a class="nav-item" href="invoices.html"><i class="fas fa-file-invoice-dollar"></i><span>Invoices</span></a>
+<a class="nav-item" href="payments.html"><i class="fas fa-money-check-alt"></i><span>Payments</span></a>
+<a class="nav-item active" href="receipts.html"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+<a class="nav-item" href="expenses.html"><i class="fas fa-credit-card"></i><span>Expenses</span></a>
+<a class="nav-item" href="reports.html"><i class="fas fa-chart-pie"></i><span>Reports</span></a>
+<a class="nav-item" href="documents.html"><i class="fas fa-folder-open"></i><span>Documents</span></a>
+<a class="nav-item" href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+</nav>
+</aside>
+
+<div class="main-wrapper">
+<header class="header">
+<div class="header-left">
+<button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+<div class="header-title"><h1>Receipts</h1><p>Thulir Design & QS Services FZE</p></div>
+</div>
+<div class="header-right"><div class="profile-icon">TD</div></div>
+</header>
+<main class="content">
+<div class="page-header">
+<div><h2>Receipt Management</h2></div>
+<button class="btn btn-primary" id="addReceiptBtn"><i class="fas fa-plus"></i> New Receipt</button>
+</div>
+<div class="summary-grid" id="summaryCards"></div>
+<div class="filter-bar">
+<div style="position:relative"><input type="text" class="search-input" id="searchInput" placeholder="Search receipts..."></div>
+<div class="filter-pills" id="filterPills">
+<button class="filter-pill active" data-filter="All">All</button>
+<button class="filter-pill" data-filter="Bank Transfer">Bank Transfer</button>
+<button class="filter-pill" data-filter="Cash">Cash</button>
+<button class="filter-pill" data-filter="Cheque">Cheque</button>
+<button class="filter-pill" data-filter="Other">Other</button>
+</div>
+</div>
+<div class="table-card">
+<div class="table-container">
+<table>
+<thead><tr><th>Receipt No</th><th>Date</th><th>Client</th><th>Invoice Ref</th><th>Payment Mode</th><th style="text-align:right">Amount</th><th style="width:60px"></th></tr></thead>
+<tbody id="receiptTableBody"></tbody>
+</table>
+</div>
+<div class="no-results" id="noResults" style="display:none"><i class="fas fa-search"></i><p>No receipts found</p></div>
+</div>
+</main>
+</div>
+
+<!-- NEW RECEIPT MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<div class="modal-header"><h2>Record Receipt</h2><button class="modal-close" id="modalClose">&times;</button></div>
+<div class="modal-body">
+<div class="form-section">
+<div class="form-section-title"><i class="fas fa-receipt"></i> Receipt Information</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Receipt Number</label><input type="text" class="form-input" id="fRcptNo" readonly></div>
+<div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="fDate"></div>
+<div class="form-group"><label class="form-label">Client</label><select class="form-select" id="fClient"><option value="">Select Client</option></select><div class="form-error" id="errClient">Required</div></div>
+<div class="form-group"><label class="form-label">Invoice</label><select class="form-select" id="fInvoice"><option value="">Select Invoice</option></select><div class="form-error" id="errInvoice">Required</div></div>
+<div class="form-group"><label class="form-label">Amount Received (AED)</label><input type="number" class="form-input" id="fAmount" min="1" value="0"><div class="form-error" id="errAmount">Enter amount</div></div>
+<div class="form-group"><label class="form-label">Payment Mode</label><select class="form-select" id="fMode"><option>Bank Transfer</option><option>Cash</option><option>Cheque</option><option>Other</option></select></div>
+<div class="form-group full"><label class="form-label">Notes</label><textarea class="form-textarea" id="fNotes" rows="2" placeholder="Reference number, cheque details, etc."></textarea></div>
+</div>
+<div class="auto-display" id="invoiceBalanceDisplay" style="display:none">
+<div class="auto-label">Selected Invoice Outstanding</div>
+<div class="auto-value" id="invBalance">AED 0</div>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+<button class="btn btn-primary" id="saveBtn"><i class="fas fa-check"></i> Save Receipt</button>
+</div>
+</div>
+</div>
+
+<!-- DETAIL DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+<div class="drawer-header">
+<div class="drawer-info">
+<div class="drawer-top"><span class="code-badge" id="dRcptNo"></span><span class="drawer-name" id="dClient"></span></div>
+<div class="drawer-meta"><span class="type-tag" id="dMode"></span><span style="font-size:16px;font-weight:700;color:var(--fg)" id="dAmount"></span></div>
+<div class="drawer-quick-actions" id="dQuickActions"></div>
+</div>
+<button class="modal-close" id="drawerClose">&times;</button>
+</div>
+<div class="drawer-tabs">
+<button class="dtab active" data-dtab="overview">Overview</button>
+<button class="dtab" data-dtab="statement">Client Statement</button>
+<button class="dtab" data-dtab="activities">Activities</button>
+</div>
+<div class="drawer-body">
+<div class="dtab-content active" id="dtab-overview"></div>
+<div class="dtab-content" id="dtab-statement"></div>
+<div class="dtab-content" id="dtab-activities"></div>
+</div>
+</div>
+
+<div class="print-area" id="printArea"></div>
+
+<script>
+const CLIENTS=["ABC Construction LLC","XYZ Builders FZCO","Delta Group Contracting","SkyHigh LLC","Coastline Constructions","Gulf Engineering Consultants","Emirates Structural Co.","Al Naboodah Contracting LLC"];
+const INVOICE_REFS=["INV-001","INV-002","INV-003","INV-004","INV-005","INV-006","INV-007","INV-008","INV-009","INV-010"];
+const INVOICE_DATA={};
+INVOICE_DATA["INV-001"]={client:"ABC Construction LLC",total:37800,received:37800};
+INVOICE_DATA["INV-002"]={client:"XYZ Builders FZCO",total:126000,received:126000};
+INVOICE_DATA["INV-003"]={client:"ABC Construction LLC",total:75500,received:30000};
+INVOICE_DATA["INV-004"]={client:"Delta Group Contracting",total:36750,received:0};
+INVOICE_DATA["INV-005"]={client:"SkyHigh LLC",total:89250,received:0};
+INVOICE_DATA["INV-006"]={client:"Gulf Engineering Consultants",total:115250,received:0};
+INVOICE_DATA["INV-007"]={client:"Al Naboodah Contracting LLC",total:44100,received:44100};
+INVOICE_DATA["INV-008"]={client:"Al Naboodah Contracting LLC",total:15750,received:0};
+INVOICE_DATA["INV-009"]={client:"ABC Construction LLC",total:12600,received:5000};
+INVOICE_DATA["INV-010"]={client:"Coastline Constructions",total:26250,received:0};
+
+const DEFAULT_RECEIPTS=[
+{id:"RCT-001",date:"2026-07-15",client:"ABC Construction LLC",invoiceRef:"INV-001",amount:17800,mode:"Bank Transfer",notes:"Transfer to ADCB account",activities:[{date:"15-Jul-2026",text:"Receipt recorded — Bank Transfer AED 17,800"}]},
+{id:"RCT-002",date:"2026-07-01",client:"ABC Construction LLC",invoiceRef:"INV-001",amount:20000,mode:"Bank Transfer",notes:"Initial payment",activities:[{date:"01-Jul-2026",text:"Receipt recorded — Bank Transfer AED 20,000"}]},
+{id:"RCT-003",date:"2026-06-30",client:"XYZ Builders FZCO",invoiceRef:"INV-002",amount:126000,mode:"Bank Transfer",notes:"Full payment for Marina Tower",activities:[{date:"30-Jun-2026",text:"Receipt recorded — Bank Transfer AED 126,000"}]},
+{id:"RCT-004",date:"2026-07-20",client:"ABC Construction LLC",invoiceRef:"INV-003",amount:30000,mode:"Bank Transfer",notes:"Partial payment — Downtown Tower",activities:[{date:"20-Jul-2026",text:"Receipt recorded — Bank Transfer AED 30,000"}]},
+{id:"RCT-005",date:"2026-06-10",client:"Al Naboodah Contracting LLC",invoiceRef:"INV-007",amount:44100,mode:"Cheque",notes:"Cheque #4521 — Naboodah Complex",activities:[{date:"10-Jun-2026",text:"Receipt recorded — Cheque AED 44,100"}]},
+{id:"RCT-006",date:"2026-07-28",client:"ABC Construction LLC",invoiceRef:"INV-009",amount:5000,mode:"Cash",notes:"Cash payment for extra scope",activities:[{date:"28-Jul-2026",text:"Receipt recorded — Cash AED 5,000"}]},
+{id:"RCT-007",date:"2026-07-25",client:"ABC Construction LLC",invoiceRef:"INV-003",amount:12000,mode:"Bank Transfer",notes:"Second partial payment",activities:[{date:"25-Jul-2026",text:"Receipt recorded — Bank Transfer AED 12,000"}]},
+{id:"RCT-008",date:"2026-07-22",client:"Gulf Engineering Consultants",invoiceRef:"INV-006",amount:15000,mode:"Bank Transfer",notes:"Advance payment for Business Bay Tower",activities:[{date:"22-Jul-2026",text:"Receipt recorded — Bank Transfer AED 15,000"}]}
+];
+
+let receipts=loadReceipts();
+let currentFilter="All";
+let searchQuery="";
+let currentDrawerId=null;
+
+function loadReceipts(){try{const d=localStorage.getItem('tdqs_receipts');return d?JSON.parse(d):JSON.parse(JSON.stringify(DEFAULT_RECEIPTS))}catch{return JSON.parse(JSON.stringify(DEFAULT_RECEIPTS))}}
+function saveReceipts(){localStorage.setItem('tdqs_receipts',JSON.stringify(receipts))}
+function fmt(n){return "AED "+Number(n||0).toLocaleString()}
+function nextId(){const nums=receipts.map(r=>parseInt(r.id.split('-')[1])||0);return "RCT-"+String(Math.max(0,...nums)+1).padStart(3,'0')}
+function today(){return new Date().toISOString().split('T')[0]}
+
+function getClientBalance(client){
+const invs=Object.entries(INVOICE_DATA).filter(([k,v])=>v.client===client);
+const totalInv=invs.reduce((a,[,v])=>a+v.total,0);
+const totalRcpt=receipts.filter(r=>r.client===client).reduce((a,r)=>a+r.amount,0);
+return totalInv-totalRcpt;
+}
+
+function renderSummary(){
+const total=receipts.length;
+const thisMonth=receipts.filter(r=>{const d=new Date(r.date);const now=new Date();return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).reduce((a,r)=>a+r.amount,0);
+const pending=CLIENTS.reduce((a,c)=>a+Math.max(0,getClientBalance(c)),0);
+const collected=receipts.reduce((a,r)=>a+r.amount,0);
+document.getElementById('summaryCards').innerHTML=`
+<div class="summary-card ${currentFilter==='All'?'active-filter':''}" onclick="applyFilter('All')"><div class="sc-title">Total Receipts</div><div class="sc-value">${total}</div></div>
+<div class="summary-card"><div class="sc-title">Received This Month</div><div class="sc-value">${fmt(thisMonth)}</div></div>
+<div class="summary-card"><div class="sc-title">Pending Collection</div><div class="sc-value">${fmt(pending)}</div><div class="sc-sub">Across ${CLIENTS.filter(c=>getClientBalance(c)>0).length} clients</div></div>
+<div class="summary-card"><div class="sc-title">Total Collected</div><div class="sc-value">${fmt(collected)}</div></div>`;
+}
+function applyFilter(f){currentFilter=f;document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p.dataset.filter===f));renderSummary();renderTable()}
+
+function getFiltered(){
+return receipts.filter(r=>{
+const mf=currentFilter==='All'||r.mode===currentFilter;
+const s=searchQuery.toLowerCase();
+const ms=!s||r.id.toLowerCase().includes(s)||r.client.toLowerCase().includes(s)||r.invoiceRef.toLowerCase().includes(s);
+return mf&&ms});
+}
+
+function renderTable(){
+const filtered=getFiltered();
+const tbody=document.getElementById('receiptTableBody');
+const noRes=document.getElementById('noResults');
+if(!filtered.length){tbody.innerHTML='';noRes.style.display='block';return}
+noRes.style.display='none';
+tbody.innerHTML=filtered.map(r=>`<tr>
+<td><span class="code-badge">${r.id}</span></td>
+<td style="color:var(--g700);font-size:13px">${r.date}</td>
+<td style="font-weight:500;min-width:180px">${r.client}</td>
+<td style="color:var(--g500)">${r.invoiceRef||'—'}</td>
+<td><span class="type-tag">${r.mode}</span></td>
+<td style="text-align:right;font-weight:700;color:var(--fg)">${fmt(r.amount)}</td>
+<td><button class="action-btn" title="View" onclick="openDrawer('${r.id}')"><i class="fas fa-eye"></i></button></td>
+</tr>`).join('');
+}
+
+function openModal(){
+document.getElementById('fRcptNo').value=nextId();
+document.getElementById('fDate').value=today();
+document.getElementById('fClient').selectedIndex=0;
+document.getElementById('fInvoice').innerHTML='<option value="">Select Invoice</option>';
+document.getElementById('fAmount').value='0';
+document.getElementById('fMode').selectedIndex=0;
+document.getElementById('fNotes').value='';
+document.getElementById('invoiceBalanceDisplay').style.display='none';
+document.querySelectorAll('.form-error').forEach(e=>e.style.display='none');
+document.querySelectorAll('.form-input.error,.form-select.error').forEach(e=>e.classList.remove('error'));
+document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
+
+document.getElementById('fClient').addEventListener('change',function(){
+document.getElementById('errClient').style.display='none';this.classList.remove('error');
+const client=this.value;
+const sel=document.getElementById('fInvoice');
+sel.innerHTML='<option value="">Select Invoice</option>';
+document.getElementById('invoiceBalanceDisplay').style.display='none';
+if(!client)return;
+Object.entries(INVOICE_DATA).filter(([k,v])=>v.client===client).forEach(([invId,inv])=>{
+const bal=inv.total-inv.received;
+if(bal>0){const o=document.createElement('option');o.value=invId;o.textContent=invId+' (Balance: '+fmt(bal)+')';sel.appendChild(o)}
+});
+});
+
+document.getElementById('fInvoice').addEventListener('change',function(){
+document.getElementById('errInvoice').style.display='none';this.classList.remove('error');
+const inv=this.value;
+if(inv&&INVOICE_DATA[inv]){
+const bal=INVOICE_DATA[inv].total-INVOICE_DATA[inv].received;
+document.getElementById('invBalance').textContent=fmt(bal);
+document.getElementById('invoiceBalanceDisplay').style.display='block';
+document.getElementById('fAmount').value=Math.min(bal,bal);
+}else{document.getElementById('invoiceBalanceDisplay').style.display='none'}
+});
+
+document.getElementById('saveBtn').addEventListener('click',()=>{
+let valid=true;
+if(!document.getElementById('fClient').value){document.getElementById('errClient').style.display='block';document.getElementById('fClient').classList.add('error');valid=false}
+if(!document.getElementById('fInvoice').value){document.getElementById('errInvoice').style.display='block';document.getElementById('fInvoice').classList.add('error');valid=false}
+const amt=Number(document.getElementById('fAmount').value)||0;
+if(amt<=0){document.getElementById('errAmount').style.display='block';document.getElementById('fAmount').classList.add('error');valid=false}
+else{document.getElementById('errAmount').style.display='none';document.getElementById('fAmount').classList.remove('error')}
+if(!valid)return;
+
+const invRef=document.getElementById('fInvoice').value;
+if(INVOICE_DATA[invRef])INVOICE_DATA[invRef].received+=amt;
+
+receipts.unshift({
+id:document.getElementById('fRcptNo').value,
+date:document.getElementById('fDate').value,
+client:document.getElementById('fClient').value,
+invoiceRef:invRef,
+amount:amt,
+mode:document.getElementById('fMode').value,
+notes:document.getElementById('fNotes').value,
+activities:[{date:new Date().toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'}),text:`Receipt recorded — ${document.getElementById('fMode').value} ${fmt(amt)}`}]
+});
+saveReceipts();closeModal();renderSummary();renderTable();showToast('Receipt '+document.getElementById('fRcptNo').value+' saved');
+});
+
+function openDrawer(id){
+const r=receipts.find(x=>x.id===id);if(!r)return;
+currentDrawerId=id;
+document.getElementById('dRcptNo').textContent=r.id;
+document.getElementById('dClient').textContent=r.client;
+document.getElementById('dMode').textContent=r.mode;
+document.getElementById('dAmount').textContent=fmt(r.amount);
+document.getElementById('dQuickActions').innerHTML=`
+<button class="btn btn-outline btn-sm" onclick="openModal()"><i class="fas fa-plus"></i> New Receipt</button>
+<button class="btn btn-secondary btn-sm" onclick="printReceipt('${r.id}')"><i class="fas fa-print"></i> Print Receipt</button>`;
+
+const clientBalance=getClientBalance(r.client);
+document.getElementById('dtab-overview').innerHTML=`<div class="detail-grid">
+<div class="detail-item"><div class="detail-label">Date</div><div class="detail-value">${r.date}</div></div>
+<div class="detail-item"><div class="detail-label">Invoice Reference</div><div class="detail-value">${r.invoiceRef||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Payment Mode</div><div class="detail-value">${r.mode}</div></div>
+<div class="detail-item"><div class="detail-label">Amount Received</div><div class="detail-value highlight">${fmt(r.amount)}</div></div>
+<div class="detail-item detail-full"><div class="detail-label">Notes</div><div class="detail-value" style="font-size:13px;font-weight:400">${r.notes||'—'}</div></div>
+<div class="detail-item detail-full"><div class="detail-label">Client Outstanding Balance</div><div class="detail-value ${clientBalance>0?'red':'green'}" style="font-size:20px">${fmt(clientBalance)}</div></div>
+</div>`;
+
+// Client Statement
+const clientReceipts=receipts.filter(x=>x.client===r.client);
+const clientInvoices=Object.entries(INVOICE_DATA).filter(([k,v])=>v.client===r.client);
+let stmtRows=[];let bal=0;
+clientInvoices.forEach(([invId,inv])=>{bal+=inv.total;stmtRows.push({date:'—',desc:'Invoice '+invId,debit:inv.total,credit:0,balance:bal})});
+clientReceipts.forEach(rc=>{bal-=rc.amount;stmtRows.push({date:rc.date,desc:'Receipt '+rc.id,debit:0,credit:rc.amount,balance:bal})});
+stmtRows.sort((a,b)=>a.date==='—'?-1:b.date==='—'?1:0);
+
+document.getElementById('dtab-statement').innerHTML=stmtRows.length?`<table class="statement-table">
+<thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Debit</th><th style="text-align:right">Credit</th><th style="text-align:right">Balance</th></tr></thead>
+<tbody>${stmtRows.map(s=>`<tr><td>${s.date}</td><td>${s.desc}</td><td class="amt-right" style="color:${s.debit?'var(--red)':'var(--g500)'}">${s.debit?fmt(s.debit):'—'}</td><td class="amt-right" style="color:${s.credit?'var(--fg)':'var(--g500)'}">${s.credit?fmt(s.credit):'—'}</td><td class="amt-right" style="font-weight:700">${fmt(s.balance)}</td></tr>`).join('')}
+<tr style="background:var(--fl);font-weight:700"><td colspan="4" style="text-align:right">Closing Balance</td><td class="amt-right" style="color:var(--fg)">${fmt(bal)}</td></tr></tbody></table>`:'<div class="empty-state"><i class="fas fa-file-alt"></i>No transactions</div>';
+
+document.getElementById('dtab-activities').innerHTML=r.activities.length?`<div class="timeline">${r.activities.map(a=>`<div class="tl-item"><div class="tl-dot"></div><div class="tl-date">${a.date}</div><div class="tl-text">${a.text}</div></div>`).join('')}</div>`:'<div class="empty-state"><i class="fas fa-clock"></i>No activities</div>';
+
+document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.dataset.dtab==='overview'));
+document.querySelectorAll('.dtab-content').forEach(c=>c.classList.toggle('active',c.id==='dtab-overview'));
+document.getElementById('drawer').classList.add('open');document.getElementById('drawerOverlay').classList.add('open');
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open');currentDrawerId=null}
+
+function printReceipt(id){
+const r=receipts.find(x=>x.id===id);if(!r)return;
+document.getElementById('printArea').innerHTML=`
+<div class="print-header"><div><h1>THULIR Design & QS Services FZE</h1><p>Construction Design & Quantity Surveying</p></div><div style="text-align:right"><h2 style="font-size:24px;color:var(--fg)">RECEIPT</h2></div></div>
+<div class="print-info"><div><strong>Receipt No:</strong> ${r.id}<br><strong>Date:</strong> ${r.date}<br><strong>Payment Mode:</strong> ${r.mode}</div>
+<div style="text-align:right"><strong>Client:</strong> ${r.client}<br><strong>Invoice Ref:</strong> ${r.invoiceRef||'—'}<br>${r.notes?'<strong>Notes:</strong> '+r.notes:''}</div></div>
+<div class="print-amount"><div class="label">Amount Received</div><div class="val">${fmt(r.amount)}</div></div>
+<div style="font-size:13px;color:var(--g700);line-height:2">This is to confirm that we have received the above amount from <strong>${r.client}</strong> against invoice <strong>${r.invoiceRef||'—'}</strong>.</div>
+<div class="print-sign"><div class="print-sign-line">Received By</div><div class="print-sign-line">Authorized Signatory</div></div>`;
+setTimeout(()=>window.print(),200);
+}
+
+// EVENTS
+document.getElementById('addReceiptBtn').addEventListener('click',openModal);
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('cancelBtn').addEventListener('click',closeModal);
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+document.getElementById('drawerClose').addEventListener('click',closeDrawer);
+document.getElementById('drawerOverlay').addEventListener('click',closeDrawer);
+document.getElementById('searchInput').addEventListener('input',e=>{searchQuery=e.target.value;renderTable()});
+document.querySelectorAll('.filter-pill').forEach(pill=>{pill.addEventListener('click',()=>{currentFilter=pill.dataset.filter;document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p===pill));renderSummary();renderTable()})});
+document.querySelectorAll('.dtab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.dtab-content').forEach(c=>c.classList.remove('active'));tab.classList.add('active');document.getElementById('dtab-'+tab.dataset.dtab).classList.add('active')})});
+
+const fc=document.getElementById('fClient');
+CLIENTS.forEach(c=>{const o=document.createElement('option');o.textContent=c;fc.appendChild(o)});
+
+// Sidebar
+const sidebar=document.getElementById('sidebar'),mobileToggle=document.getElementById('mobileToggle'),overlay=document.getElementById('sidebarOverlay');
+mobileToggle.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('active')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('active')});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',e=>{document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));e.currentTarget.classList.add('active');if(window.innerWidth<=768){sidebar.classList.remove('open');overlay.classList.remove('active')}})});
+
+function showToast(msg,type='success'){const t=document.createElement('div');t.className='toast toast-'+type;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3000)}
+
+renderSummary();renderTable();
+</script>
+</body>
+</html>
