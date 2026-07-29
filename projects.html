@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDQS - Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--fg:#1B5E20;--fh:#2E7D32;--fl:#E8F5E9;--fm:#4CAF50;--w:#FFF;--bk:#121212;--g50:#FAFAFA;--g100:#F5F5F5;--g200:#EEE;--g300:#E0E0E0;--g500:#757575;--g700:#424242;--g900:#212121;--sw:70px;--swe:240px;--hh:64px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--g100);color:var(--g900);overflow:hidden;height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sw);background:var(--bk);color:var(--w);z-index:1000;transition:width .3s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;flex-direction:column}
+.sidebar:hover{width:var(--swe)}
+.sidebar-logo{height:var(--hh);display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);gap:12px;white-space:nowrap}
+.sidebar-logo i{font-size:24px;color:var(--fm);min-width:30px;text-align:center}
+.sidebar-logo span{font-family:'Playfair Display',serif;font-size:18px;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .sidebar-logo span{opacity:1}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto;overflow-x:hidden}
+.nav-item{display:flex;align-items:center;padding:12px 20px;color:var(--g300);text-decoration:none;gap:12px;cursor:pointer;transition:all .2s;white-space:nowrap;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--w)}
+.nav-item.active{background:rgba(27,94,32,.2);color:var(--fm);border-left-color:var(--fm)}
+.nav-item i{font-size:18px;min-width:30px;text-align:center}
+.nav-item span{font-size:14px;font-weight:500;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .nav-item span{opacity:1}
+.main-wrapper{margin-left:var(--sw);height:100vh;display:flex;flex-direction:column;transition:margin-left .3s}
+.header{height:var(--hh);background:var(--w);border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:500;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:16px}
+.mobile-toggle{display:none;background:none;border:none;font-size:20px;color:var(--g700);cursor:pointer}
+.header-title h1{font-size:18px;font-weight:700;color:var(--bk)}
+.header-title p{font-size:12px;color:var(--g500)}
+.header-right{display:flex;align-items:center;gap:16px}
+.profile-icon{width:36px;height:36px;border-radius:50%;background:var(--fg);color:var(--w);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;cursor:pointer}
+.content{flex:1;overflow-y:auto;padding:24px;background:var(--g100)}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-header-left h2{font-size:22px;font-weight:700}
+.btn{padding:10px 20px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
+.btn-primary{background:var(--fg);color:var(--w)}
+.btn-primary:hover{background:var(--fh)}
+.btn-secondary{background:var(--g100);color:var(--g700);border:1px solid var(--g300)}
+.btn-secondary:hover{background:var(--g200)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-danger{background:#C62828;color:var(--w)}
+.btn-danger:hover{background:#B71C1C}
+
+/* SEARCH & FILTER */
+.filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.search-input{padding:8px 14px 8px 36px;border:1px solid var(--g300);border-radius:6px;font-size:14px;outline:none;width:280px;background:var(--w) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23757575' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E") 10px center/16px no-repeat;transition:border-color .2s}
+.search-input:focus{border-color:var(--fg)}
+.filter-pills{display:flex;gap:0;border:1px solid var(--g300);border-radius:6px;overflow:hidden}
+.filter-pill{padding:8px 16px;border:none;background:var(--w);font-size:13px;font-weight:500;color:var(--g500);cursor:pointer;transition:all .2s;white-space:nowrap}
+.filter-pill:hover{color:var(--fg)}
+.filter-pill.active{background:var(--fg);color:var(--w)}
+
+/* SUMMARY CARDS */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px}
+.summary-card{background:var(--w);border-radius:8px;padding:20px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.summary-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+.summary-card.active-filter{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.summary-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.summary-card.sc-total::before{background:var(--fg)}
+.summary-card.sc-active::before{background:#1565C0}
+.summary-card.sc-completed::before{background:var(--fh)}
+.summary-card.sc-cancelled::before{background:#C62828}
+.sc-title{font-size:13px;color:var(--g500);font-weight:500;margin-bottom:8px}
+.sc-value{font-size:28px;font-weight:700}
+.sc-total .sc-value{color:var(--fg)}
+.sc-active .sc-value{color:#1565C0}
+.sc-completed .sc-value{color:var(--fh)}
+.sc-cancelled .sc-value{color:#C62828}
+
+/* TABLE */
+.table-card{background:var(--w);border-radius:8px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden}
+.table-container{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--g200);font-size:14px}
+th{font-weight:600;color:var(--g500);font-size:12px;text-transform:uppercase;letter-spacing:.5px;background:var(--g50);position:sticky;top:0}
+tr:hover td{background:var(--g50)}
+.expanded-row td{padding:0;border-bottom:1px solid var(--g200);background:var(--g50)}
+.fin-strip{display:flex;gap:0;padding:16px;overflow-x:auto;flex-wrap:nowrap}
+.fin-item{min-width:140px;padding:8px 16px;border-right:1px solid var(--g200);display:flex;flex-direction:column;gap:2px}
+.fin-item:last-child{border-right:none}
+.fin-label{font-size:11px;color:var(--g500);text-transform:uppercase;letter-spacing:.3px}
+.fin-val{font-size:15px;font-weight:700}
+.fin-val.green{color:var(--fg)}
+.fin-val.red{color:#C62828}
+.fin-val.blue{color:#1565C0}
+.fin-val.dark{color:var(--g900)}
+
+/* STATUS & PROGRESS */
+.status-pill{padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap;display:inline-block}
+.sp-progress{background:#E3F2FD;color:#1565C0}
+.sp-completed{background:var(--fl);color:var(--fh)}
+.sp-not-started{background:var(--g100);color:var(--g500)}
+.sp-cancelled{background:#FFEBEE;color:#C62828}
+.progress-wrap{display:flex;align-items:center;gap:10px;min-width:120px}
+.progress-bar{flex:1;height:6px;background:var(--g200);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--fg);border-radius:3px;transition:width .5s ease}
+.progress-text{font-size:13px;font-weight:600;color:var(--g700);min-width:36px}
+.action-btns{display:flex;gap:6px}
+.action-btn{width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;background:var(--g100);color:var(--g500)}
+.action-btn:hover{background:var(--fl);color:var(--fg)}
+.action-btn.expanded{background:var(--fl);color:var(--fg);transform:rotate(90deg)}
+.code-badge{font-weight:700;color:var(--fg);font-size:13px;background:var(--fl);padding:3px 8px;border-radius:4px}
+.type-tag{font-size:12px;color:var(--g500);background:var(--g100);padding:2px 8px;border-radius:4px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--w);border-radius:12px;width:720px;max-width:95vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--g200)}
+.modal-header h2{font-size:18px;font-weight:700}
+.modal-close{width:36px;height:36px;border:none;background:var(--g100);border-radius:50%;cursor:pointer;font-size:18px;color:var(--g500);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:#FFEBEE;color:#C62828}
+.modal-body{flex:1;overflow-y:auto;padding:0}
+
+/* STEPPER */
+.stepper{display:flex;align-items:center;padding:20px 24px 0;gap:0;position:relative}
+.stepper-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;z-index:1;cursor:pointer}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--g200);color:var(--g500);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all .3s;border:2px solid var(--g200)}
+.step-label{font-size:11px;color:var(--g500);margin-top:6px;font-weight:500;text-align:center;transition:color .3s}
+.stepper-step.active .step-num{background:var(--fg);color:var(--w);border-color:var(--fg)}
+.stepper-step.active .step-label{color:var(--fg);font-weight:600}
+.stepper-step.done .step-num{background:var(--fl);color:var(--fg);border-color:var(--fm)}
+.stepper-step.done .step-label{color:var(--fh)}
+.stepper-line{position:absolute;top:35px;left:10%;right:10%;height:2px;background:var(--g200);z-index:0}
+.stepper-line-fill{height:100%;background:var(--fg);transition:width .3s;width:0}
+
+/* FORM */
+.form-area{padding:24px}
+.step-content{display:none}
+.step-content.active{display:block}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-grid .full{grid-column:1/-1}
+.form-grid .span-1-3{grid-column:span 1}
+.form-grid .span-2-3{grid-column:span 1}
+.form-group{display:flex;flex-direction:column}
+.form-label{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:6px}
+.form-label small{font-weight:400;color:var(--g500);font-size:11px}
+.form-input,.form-select{padding:10px 12px;border:1px solid var(--g300);border-radius:6px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:var(--w);color:var(--g900)}
+.form-input:focus,.form-select:focus{border-color:var(--fg)}
+.form-input[readonly]{background:var(--fl);border:1px solid rgba(27,94,32,.2);border-left:3px solid var(--fg);font-weight:700;color:var(--fg)}
+.auto-display{background:var(--fl);border:1px solid rgba(27,94,32,.15);border-left:4px solid var(--fg);border-radius:6px;padding:14px 16px;margin-top:4px}
+.auto-display .auto-label{font-size:12px;color:var(--fh);font-weight:500}
+.auto-display .auto-value{font-size:20px;font-weight:700;color:var(--fg);margin-top:2px}
+.form-error{font-size:11px;color:#C62828;margin-top:4px;display:none}
+.form-input.error,.form-select.error{border-color:#C62828}
+.modal-footer{display:flex;justify-content:space-between;padding:16px 24px;border-top:1px solid var(--g200)}
+
+/* DOCUMENTS IN FORM */
+.doc-section{margin-bottom:20px;padding:16px;background:var(--g50);border-radius:8px}
+.doc-section h4{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--g700)}
+.doc-upload-row{display:flex;gap:8px;margin-bottom:8px}
+.doc-upload-row input[type=file]{flex:1;font-size:13px}
+.doc-list{list-style:none}
+.doc-list li{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--g700);border-bottom:1px solid var(--g200)}
+.doc-list li:last-child{border-bottom:none}
+.doc-remove{background:none;border:none;color:#C62828;cursor:pointer;font-size:12px}
+
+/* DRAWER */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1500}
+.drawer-overlay.open{display:block}
+.drawer{position:fixed;top:0;right:-600px;bottom:0;width:580px;max-width:100vw;background:var(--w);z-index:1501;box-shadow:-4px 0 24px rgba(0,0,0,.15);transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drawer.open{right:0}
+.drawer-header{padding:20px 24px;border-bottom:1px solid var(--g200);display:flex;justify-content:space-between;align-items:flex-start}
+.drawer-info{display:flex;flex-direction:column;gap:8px}
+.drawer-top{display:flex;align-items:center;gap:10px}
+.drawer-name{font-size:18px;font-weight:700}
+.drawer-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.drawer-tabs{display:flex;border-bottom:2px solid var(--g200);padding:0 24px;flex-shrink:0}
+.dtab{padding:12px 16px;border:none;background:none;font-size:13px;font-weight:600;color:var(--g500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.dtab:hover{color:var(--fg)}
+.dtab.active{color:var(--fg);border-bottom-color:var(--fg)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px}
+.dtab-content{display:none}
+.dtab-content.active{display:block}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.detail-item{padding:12px;background:var(--g50);border-radius:6px}
+.detail-label{font-size:12px;color:var(--g500);margin-bottom:4px}
+.detail-value{font-size:15px;font-weight:600;color:var(--g900)}
+.detail-value.highlight{color:var(--fg);font-size:18px}
+.detail-value.red{color:#C62828}
+.detail-full{grid-column:1/-1}
+.progress-update{display:flex;align-items:center;gap:12px;margin-top:16px;padding:16px;background:var(--fl);border-radius:8px}
+.progress-update input[type=range]{flex:1;accent-color:var(--fg)}
+.progress-update span{font-weight:700;color:var(--fg);min-width:40px;text-align:center}
+
+/* DOC LIST IN DRAWER */
+.drawer-doc-section{margin-bottom:20px}
+.drawer-doc-section h4{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.drawer-doc-section h4 i{color:var(--fg);font-size:13px}
+.drawer-doc-list{list-style:none;padding-left:28px}
+.drawer-doc-list li{padding:4px 0;font-size:13px;color:var(--g700);display:flex;align-items:center;gap:6px}
+.drawer-doc-list li i{color:var(--g500);font-size:11px}
+.empty-state{text-align:center;padding:24px;color:var(--g500);font-size:13px}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--g300)}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-item:last-child{margin-bottom:0}
+.tl-dot{position:absolute;left:-21px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--fg);border:2px solid var(--w);box-shadow:0 0 0 2px var(--fg)}
+.tl-date{font-size:12px;font-weight:600;color:var(--g500);margin-bottom:4px}
+.tl-text{font-size:14px;color:var(--g700)}
+.tl-text::before{content:'✓ ';color:var(--fg);font-weight:700}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;color:var(--w);z-index:9999;transition:transform .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast-success{background:var(--fg)}
+.toast-error{background:#C62828}
+
+/* NO RESULTS */
+.no-results{text-align:center;padding:48px 24px;color:var(--g500)}
+.no-results i{font-size:48px;margin-bottom:12px;opacity:.3}
+.no-results p{font-size:15px}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+.summary-grid{grid-template-columns:repeat(2,1fr)}
+.form-grid{grid-template-columns:1fr}
+.form-grid .span-1-3,.form-grid .span-2-3{grid-column:auto}
+.detail-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+.sidebar{width:var(--swe);left:calc(-1*var(--swe))}
+.sidebar.open{left:0}
+.sidebar:hover{width:var(--swe)}
+.sidebar .nav-item span,.sidebar:hover .nav-item span{opacity:1}
+.sidebar .sidebar-logo span,.sidebar:hover .sidebar-logo span{opacity:1}
+.main-wrapper{margin-left:0}
+.mobile-toggle{display:block}
+.content{padding:16px}
+.search-input{width:100%}
+.filter-bar{flex-direction:column;align-items:stretch}
+.filter-pills{overflow-x:auto}
+.stepper{padding:16px 16px 0}
+.step-label{font-size:10px}
+.modal{max-width:100vw;max-height:100vh;border-radius:0}
+.drawer{width:100vw}
+}
+@media(max-width:480px){.summary-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-logo"><i class="fas fa-hard-hat"></i><span>THULIR FZE</span></div>
+<nav class="sidebar-nav">
+<a class="nav-item" href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+<a class="nav-item active" href="projects.html"><i class="fas fa-building"></i><span>Projects</span></a>
+<a class="nav-item" href="contractors.html"><i class="fas fa-users"></i><span>Contractors</span></a>
+<a class="nav-item" href="vendors.html"><i class="fas fa-truck"></i><span>Vendors</span></a>
+<a class="nav-item" href="quotations.html"><i class="fas fa-file-alt"></i><span>Quotations</span></a>
+<a class="nav-item" href="invoices.html"><i class="fas fa-file-invoice-dollar"></i><span>Invoices</span></a>
+<a class="nav-item" href="payments.html"><i class="fas fa-money-check-alt"></i><span>Payments</span></a>
+<a class="nav-item" href="receipts.html"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+<a class="nav-item" href="expenses.html"><i class="fas fa-credit-card"></i><span>Expenses</span></a>
+<a class="nav-item" href="reports.html"><i class="fas fa-chart-pie"></i><span>Reports</span></a>
+<a class="nav-item" href="documents.html"><i class="fas fa-folder-open"></i><span>Documents</span></a>
+<a class="nav-item" href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+</nav>
+</aside>
+
+<div class="main-wrapper">
+<header class="header">
+<div class="header-left">
+<button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+<div class="header-title"><h1>Projects</h1><p>Thulir Design & QS Services FZE</p></div>
+</div>
+<div class="header-right"><div class="profile-icon">TD</div></div>
+</header>
+
+<main class="content">
+<div class="page-header">
+<div class="page-header-left"><h2>Project Management</h2></div>
+<button class="btn btn-primary" id="addProjectBtn"><i class="fas fa-plus"></i> Add New Project</button>
+</div>
+
+<div class="summary-grid" id="summaryCards"></div>
+
+<div class="filter-bar">
+<div style="position:relative"><input type="text" class="search-input" id="searchInput" placeholder="Search projects..."></div>
+<div class="filter-pills" id="filterPills">
+<button class="filter-pill active" data-filter="All">All</button>
+<button class="filter-pill" data-filter="Not Yet Started">Not Started</button>
+<button class="filter-pill" data-filter="In Progress">In Progress</button>
+<button class="filter-pill" data-filter="Completed">Completed</button>
+<button class="filter-pill" data-filter="Cancelled">Cancelled</button>
+</div>
+</div>
+
+<div class="table-card">
+<div class="table-container">
+<table>
+<thead><tr>
+<th style="width:36px"></th>
+<th>Code</th>
+<th>Project Name</th>
+<th>Contractor</th>
+<th>Type</th>
+<th>Status</th>
+<th>Progress</th>
+<th style="width:80px">Action</th>
+</tr></thead>
+<tbody id="projectTableBody"></tbody>
+</table>
+</div>
+<div class="no-results" id="noResults" style="display:none"><i class="fas fa-search"></i><p>No projects found</p></div>
+</div>
+</main>
+</div>
+
+<!-- ADD PROJECT MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<div class="modal-header"><h2>Add New Project</h2><button class="modal-close" id="modalClose">&times;</button></div>
+<div class="modal-body">
+<div class="stepper" id="stepper">
+<div class="stepper-line"><div class="stepper-line-fill" id="stepperFill"></div></div>
+<div class="stepper-step active" data-step="1"><div class="step-num">1</div><div class="step-label">Project Info</div></div>
+<div class="stepper-step" data-step="2"><div class="step-num">2</div><div class="step-label">Commercial</div></div>
+<div class="stepper-step" data-step="3"><div class="step-num">3</div><div class="step-label">Invoice</div></div>
+<div class="stepper-step" data-step="4"><div class="step-num">4</div><div class="step-label">Vendor</div></div>
+<div class="stepper-step" data-step="5"><div class="step-num">5</div><div class="step-label">Documents</div></div>
+</div>
+<div class="form-area">
+<!-- Step 1 -->
+<div class="step-content active" data-step="1">
+<div class="form-grid">
+<div class="form-group span-1-3"><label class="form-label">Project Code <small>Max 3 chars</small></label><input type="text" class="form-input" id="fCode" maxlength="3" placeholder="e.g. DUB" style="text-transform:uppercase"><div class="form-error" id="errCode">Max 3 characters allowed</div></div>
+<div class="form-group span-2-3"><label class="form-label">Project Name</label><input type="text" class="form-input" id="fName" placeholder="Enter project name"><div class="form-error" id="errName">Project name is required</div></div>
+<div class="form-group"><label class="form-label">Contractor</label><select class="form-select" id="fContractor"><option value="">Select Contractor</option></select><div class="form-error" id="errContractor">Select a contractor</div></div>
+<div class="form-group"><label class="form-label">Project Type</label><select class="form-select" id="fType"><option value="">Select Type</option><option>Rebar Detailing</option><option>Structural Design</option><option>Architecture</option><option>QS / BOQ</option><option>Estimation</option><option>Other</option></select><div class="form-error" id="errType">Select project type</div></div>
+<div class="form-group full"><label class="form-label">Location</label><input type="text" class="form-input" id="fLocation" placeholder="Enter location"></div>
+<div class="form-group"><label class="form-label">Start Date</label><input type="date" class="form-input" id="fStart"></div>
+<div class="form-group"><label class="form-label">Expected Completion</label><input type="date" class="form-input" id="fEnd"></div>
+<div class="form-group"><label class="form-label">Status</label><select class="form-select" id="fStatus"><option>Not Yet Started</option><option>In Progress</option><option>Completed</option><option>Cancelled</option></select></div>
+<div class="form-group"><label class="form-label">Progress %</label><input type="number" class="form-input" id="fProgress" min="0" max="100" value="0"></div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="step-content" data-step="2">
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Approved Amount (AED)</label><input type="number" class="form-input" id="fApproved" min="0" value="0"></div>
+<div class="form-group"><label class="form-label">VAT (AED)</label><input type="number" class="form-input" id="fVat" min="0" value="0"></div>
+<div class="form-group full"><div class="auto-display"><div class="auto-label">Total Contract Value</div><div class="auto-value" id="fTotalContract">AED 0</div></div></div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="step-content" data-step="3">
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Total Invoice (AED) <small>Auto-linked from invoices</small></label><input type="number" class="form-input" id="fInvoice" min="0" value="0"></div>
+<div class="form-group"><label class="form-label">Received Amount (AED) <small>Auto-linked from receipts</small></label><input type="number" class="form-input" id="fReceived" min="0" value="0"></div>
+<div class="form-group full"><div class="auto-display"><div class="auto-label">Outstanding Amount</div><div class="auto-value" id="fOutstanding">AED 0</div></div></div>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="step-content" data-step="4">
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Assigned Vendor</label><select class="form-select" id="fVendor"><option value="">None</option></select></div>
+<div class="form-group"><label class="form-label">Scope</label><select class="form-select" id="fScope"><option value="">Select Scope</option><option>Rebar Detailing</option><option>Structural Design</option><option>Architecture</option><option>QS</option><option>BOQ Preparation</option><option>Estimation</option><option>Other</option></select></div>
+<div class="form-group"><label class="form-label">Vendor Cost (AED)</label><input type="number" class="form-input" id="fVCost" min="0" value="0"></div>
+<div class="form-group"><label class="form-label">Vendor Paid (AED)</label><input type="number" class="form-input" id="fVPaid" min="0" value="0"></div>
+<div class="form-group full"><div class="auto-display"><div class="auto-label">Vendor Balance Pending</div><div class="auto-value" id="fVBalance">AED 0</div></div></div>
+</div>
+</div>
+<!-- Step 5 -->
+<div class="step-content" data-step="5">
+<div class="doc-section"><h4><i class="fas fa-drafting-compass"></i> Drawings</h4><div class="doc-upload-row"><input type="file" id="docDrawings" multiple><button class="btn btn-secondary btn-sm" onclick="addDoc('drawings')">Add</button></div><ul class="doc-list" id="docListDrawings"></ul></div>
+<div class="doc-section"><h4><i class="fas fa-question-circle"></i> RFI</h4><div class="doc-upload-row"><input type="file" id="docRfi" multiple><button class="btn btn-secondary btn-sm" onclick="addDoc('rfi')">Add</button></div><ul class="doc-list" id="docListRfi"></ul></div>
+<div class="doc-section"><h4><i class="fas fa-check-circle"></i> Final Submission</h4><div class="doc-upload-row"><input type="file" id="docFinal" multiple><button class="btn btn-secondary btn-sm" onclick="addDoc('final')">Add</button></div><ul class="doc-list" id="docListFinal"></ul></div>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" id="prevBtn" style="visibility:hidden"><i class="fas fa-arrow-left"></i> Previous</button>
+<div style="display:flex;gap:8px">
+<button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+<button class="btn btn-primary" id="nextBtn">Next <i class="fas fa-arrow-right"></i></button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- PROJECT DETAIL DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+<div class="drawer-header">
+<div class="drawer-info">
+<div class="drawer-top"><span class="code-badge" id="dCode"></span><span class="drawer-name" id="dName"></span></div>
+<div class="drawer-meta"><span class="status-pill" id="dStatus"></span><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="dProgressBar"></div></div><span class="progress-text" id="dProgressText"></span></div></div>
+</div>
+<button class="modal-close" id="drawerClose">&times;</button>
+</div>
+<div class="drawer-tabs">
+<button class="dtab active" data-dtab="overview">Overview</button>
+<button class="dtab" data-dtab="commercial">Commercial</button>
+<button class="dtab" data-dtab="vendor">Vendor</button>
+<button class="dtab" data-dtab="documents">Documents</button>
+<button class="dtab" data-dtab="activity">Activity</button>
+</div>
+<div class="drawer-body">
+<div class="dtab-content active" id="dtab-overview"></div>
+<div class="dtab-content" id="dtab-commercial"></div>
+<div class="dtab-content" id="dtab-vendor"></div>
+<div class="dtab-content" id="dtab-documents"></div>
+<div class="dtab-content" id="dtab-activity"></div>
+</div>
+</div>
+
+<script>
+// ── DATA ──
+const CONTRACTORS = ["ABC Construction","XYZ Builders","Delta Group","SkyHigh LLC","Coastline Con.","Gulf Engineering","Emirates Struct","Al Naboodah"];
+const VENDORS = ["Al Futtaim Supplies","Emirates Hardware LLC","Technical Drafting Co.","Design Masters LLC","Build Solutions","Steel Works UAE"];
+const TYPE_CODES = {"Rebar Detailing":"RBD","Structural Design":"STR","Architecture":"ARC","QS / BOQ":"QS","Estimation":"EST","Other":"OTH"};
+
+const DEFAULT_PROJECTS = [
+{id:"PRJ-001",code:"DUB",name:"Dubai Villa Rebar Work",contractor:"ABC Construction",type:"Rebar Detailing",location:"Dubai, JVC",startDate:"2025-04-15",expectedCompletion:"2025-10-30",status:"In Progress",progress:80,approvedAmount:50000,vat:2500,totalInvoice:40000,receivedAmount:32000,vendor:"Technical Drafting Co.",vendorScope:"Rebar Detailing",vendorCost:20000,vendorPaid:15000,documents:{drawings:["Villa_GF_Rebar.dwg","Villa_FF_Rebar.dwg"],rfi:["RFI-001_Coverage.pdf"],finalSubmission:[]},activities:[{date:"29-Jul-2026",text:"Invoice INV-003 created"},{date:"25-Jul-2026",text:"Payment received AED 12,000"},{date:"20-Jul-2026",text:"Vendor payment made AED 5,000"},{date:"15-Jul-2026",text:"Progress updated to 80%"},{date:"01-Jul-2026",text:"Project updated"}]},
+{id:"PRJ-002",code:"TWR",name:"Marina Tower Structural Design",contractor:"XYZ Builders",type:"Structural Design",location:"Dubai Marina",startDate:"2025-01-10",expectedCompletion:"2025-06-30",status:"Completed",progress:100,approvedAmount:120000,vat:6000,totalInvoice:126000,receivedAmount:126000,vendor:"Design Masters LLC",vendorScope:"Structural Design",vendorCost:45000,vendorPaid:45000,documents:{drawings:["Tower_Structural.dwg","Tower_Foundation.dwg","Tower_Roof.dwg"],rfi:["RFI-001.pdf","RFI-002.pdf"],finalSubmission:["Final_Structural_Report.pdf"]},activities:[{date:"30-Jun-2025",text:"Final submission completed"},{date:"28-Jun-2025",text:"Full payment received AED 126,000"},{date:"15-Jun-2025",text:"Project marked as Completed"}]},
+{id:"PRJ-003",code:"ALM",name:"Al Mamzar Villa QS Services",contractor:"Delta Group",type:"QS / BOQ",location:"Al Mamzar, Sharjah",startDate:"2025-06-01",expectedCompletion:"2025-12-15",status:"In Progress",progress:45,approvedAmount:35000,vat:1750,totalInvoice:15000,receivedAmount:10000,vendor:"",vendorScope:"",vendorCost:0,vendorPaid:0,documents:{drawings:["Villa_Arch_Plan.dwg"],rfi:[],finalSubmission:[]},activities:[{date:"20-Jul-2026",text:"BOQ draft submitted"},{date:"10-Jul-2026",text:"Payment received AED 10,000"},{date:"01-Jun-2025",text:"Project started"}]},
+{id:"PRJ-004",code:"JBR",name:"JBR Apartment Architecture",contractor:"SkyHigh LLC",type:"Architecture",location:"JBR, Dubai",startDate:"2025-08-01",expectedCompletion:"2026-02-28",status:"Not Yet Started",progress:0,approvedAmount:85000,vat:4250,totalInvoice:0,receivedAmount:0,vendor:"",vendorScope:"",vendorCost:0,vendorPaid:0,documents:{drawings:[],rfi:[],finalSubmission:[]},activities:[{date:"15-Jul-2026",text:"Contract signed"},{date:"10-Jul-2026",text:"Project added to system"}]},
+{id:"PRJ-005",code:"PLM",name:"Palm Jumeirah Cost Estimation",contractor:"Coastline Con.",type:"Estimation",location:"Palm Jumeirah, Dubai",startDate:"2025-07-10",expectedCompletion:"2025-09-30",status:"In Progress",progress:20,approvedAmount:25000,vat:1250,totalInvoice:5000,receivedAmount:0,vendor:"Build Solutions",vendorScope:"Estimation",vendorCost:10000,vendorPaid:0,documents:{drawings:["Palm_Villa_Plan.pdf"],rfi:[],finalSubmission:[]},activities:[{date:"28-Jul-2026",text:"Estimation in progress"},{date:"10-Jul-2026",text:"Project started"}]},
+{id:"PRJ-006",code:"DTC",name:"Downtown Tower Rebar Detailing",contractor:"Gulf Engineering",type:"Rebar Detailing",location:"Downtown Dubai",startDate:"2025-05-01",expectedCompletion:"2025-11-30",status:"In Progress",progress:60,approvedAmount:75000,vat:3750,totalInvoice:45000,receivedAmount:30000,vendor:"Technical Drafting Co.",vendorScope:"Rebar Detailing",vendorCost:35000,vendorPaid:20000,documents:{drawings:["DT_B1_Rebar.dwg","DT_B2_Rebar.dwg","DT_Typical_Floor.dwg"],rfi:["RFI-001_Bar_Sizes.pdf"],finalSubmission:[]},activities:[{date:"29-Jul-2026",text:"Invoice INV-007 created"},{date:"22-Jul-2026",text:"Payment received AED 15,000"},{date:"18-Jul-2026",text:"Vendor payment AED 10,000"},{date:"01-May-2025",text:"Project started"}]},
+{id:"PRJ-007",code:"SHT",name:"Sheikh Zayed Road Structural",contractor:"Emirates Struct",type:"Structural Design",location:"Sheikh Zayed Road, Dubai",startDate:"2025-03-15",expectedCompletion:"2025-08-30",status:"Cancelled",progress:15,approvedAmount:95000,vat:4750,totalInvoice:15000,receivedAmount:5000,vendor:"Design Masters LLC",vendorScope:"Structural Design",vendorCost:30000,vendorPaid:5000,documents:{drawings:["SZR_Preliminary.dwg"],rfi:[],finalSubmission:[]},activities:[{date:"01-Jul-2025",text:"Project cancelled by client"},{date:"15-Jun-2025",text:"Partial payment received AED 5,000"},{date:"15-Mar-2025",text:"Project started"}]},
+{id:"PRJ-008",code:"NBD",name:"Naboodah Complex BOQ",contractor:"Al Naboodah",type:"QS / BOQ",location:"Al Quoz, Dubai",startDate:"2025-02-01",expectedCompletion:"2025-05-15",status:"Completed",progress:100,approvedAmount:42000,vat:2100,totalInvoice:44100,receivedAmount:44100,vendor:"",vendorScope:"",vendorCost:0,vendorPaid:0,documents:{drawings:["Complex_Arch.dwg","Complex_Struct.dwg"],rfi:["RFI-001_Scope.pdf"],finalSubmission:["Final_BOQ_Report.xlsx"]},activities:[{date:"15-May-2025",text:"Final BOQ submitted and approved"},{date:"10-May-2025",text:"Full payment received"},{date:"01-Feb-2025",text:"Project started"}]}
+];
+
+// ── STATE ──
+let projects = loadProjects();
+let currentFilter = "All";
+let searchQuery = "";
+let expandedRows = new Set();
+let currentStep = 1;
+let formDocs = {drawings:[],rfi:[],final:[]};
+
+// ── HELPERS ──
+function loadProjects(){try{const d=localStorage.getItem('tdqs_projects');return d?JSON.parse(d):JSON.parse(JSON.stringify(DEFAULT_PROJECTS))}catch{return JSON.parse(JSON.stringify(DEFAULT_PROJECTS))}}
+function saveProjects(){localStorage.setItem('tdqs_projects',JSON.stringify(projects))}
+function fmt(n){return "AED "+Number(n||0).toLocaleString()}
+function calcContract(p){return (Number(p.approvedAmount)||0)+(Number(p.vat)||0)}
+function calcOutstanding(p){return (Number(p.totalInvoice)||0)-(Number(p.receivedAmount)||0)}
+function calcProfit(p){return calcContract(p)-(Number(p.vendorCost)||0)}
+function calcVBalance(p){return (Number(p.vendorCost)||0)-(Number(p.vendorPaid)||0)}
+function statusClass(s){return{['In Progress']:'sp-progress',Completed:'sp-completed',['Not Yet Started']:'sp-not-started',Cancelled:'sp-cancelled'}[s]||'sp-not-started'}
+function nextId(){const nums=projects.map(p=>parseInt(p.id.split('-')[1])||0);return "PRJ-"+String(Math.max(0,...nums)+1).padStart(3,'0')}
+
+// ── RENDER: SUMMARY ──
+function renderSummary(){
+const total=projects.length,active=projects.filter(p=>p.status==='In Progress').length,completed=projects.filter(p=>p.status==='Completed').length,cancelled=projects.filter(p=>p.status==='Cancelled').length;
+const filterMap={All:'sc-total',['In Progress']:'sc-active',Completed:'sc-completed',Cancelled:'sc-cancelled'};
+document.getElementById('summaryCards').innerHTML=`
+<div class="summary-card ${filterMap[currentFilter]||'sc-total'} ${currentFilter==='All'?'active-filter':''}" onclick="applyCardFilter('All')"><div class="sc-title">Total Projects</div><div class="sc-value">${total}</div></div>
+<div class="summary-card ${filterMap[currentFilter]||''} ${currentFilter==='In Progress'?'active-filter':''}" onclick="applyCardFilter('In Progress')"><div class="sc-title">Active Projects</div><div class="sc-value">${active}</div></div>
+<div class="summary-card ${filterMap[currentFilter]||''} ${currentFilter==='Completed'?'active-filter':''}" onclick="applyCardFilter('Completed')"><div class="sc-title">Completed Projects</div><div class="sc-value">${completed}</div></div>
+<div class="summary-card ${filterMap[currentFilter]||''} ${currentFilter==='Cancelled'?'active-filter':''}" onclick="applyCardFilter('Cancelled')"><div class="sc-title">Cancelled Projects</div><div class="sc-value">${cancelled}</div></div>`;
+}
+
+function applyCardFilter(f){currentFilter=f;document.querySelectorAll('.filter-pill').forEach(p=>{p.classList.toggle('active',p.dataset.filter===f)});renderSummary();renderTable()}
+
+// ── RENDER: TABLE ──
+function getFiltered(){
+return projects.filter(p=>{
+const matchFilter=currentFilter==='All'||p.status===currentFilter;
+const q=searchQuery.toLowerCase();
+const matchSearch=!q||p.code.toLowerCase().includes(q)||p.name.toLowerCase().includes(q)||p.contractor.toLowerCase().includes(q)||p.type.toLowerCase().includes(q);
+return matchFilter&&matchSearch});
+}
+
+function renderTable(){
+const filtered=getFiltered();
+const tbody=document.getElementById('projectTableBody');
+const noRes=document.getElementById('noResults');
+if(!filtered.length){tbody.innerHTML='';noRes.style.display='block';return}
+noRes.style.display='none';
+tbody.innerHTML=filtered.map(p=>{
+const isExp=expandedRows.has(p.id);
+const profit=calcProfit(p);
+return `<tr>
+<td><button class="action-btn ${isExp?'expanded':''}" onclick="toggleExpand('${p.id}')"><i class="fas fa-chevron-right"></i></button></td>
+<td><span class="code-badge">${p.code}</span></td>
+<td style="font-weight:600;min-width:180px">${p.name}</td>
+<td style="color:var(--g700)">${p.contractor}</td>
+<td><span class="type-tag">${p.type}</span></td>
+<td><span class="status-pill ${statusClass(p.status)}">${p.status}</span></td>
+<td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%"></div></div><span class="progress-text">${p.progress}%</span></div></td>
+<td><div class="action-btns"><button class="action-btn" title="View Details" onclick="openDrawer('${p.id}')"><i class="fas fa-eye"></i></button></div></td>
+</tr>
+<tr class="expanded-row" style="display:${isExp?'table-row':'none'}" id="exp-${p.id}"><td colspan="8"><div class="fin-strip">
+<div class="fin-item"><span class="fin-label">Approved</span><span class="fin-val dark">${fmt(p.approvedAmount)}</span></div>
+<div class="fin-item"><span class="fin-label">VAT</span><span class="fin-val dark">${fmt(p.vat)}</span></div>
+<div class="fin-item"><span class="fin-label">Contract Value</span><span class="fin-val blue">${fmt(calcContract(p))}</span></div>
+<div class="fin-item"><span class="fin-label">Invoiced</span><span class="fin-val dark">${fmt(p.totalInvoice)}</span></div>
+<div class="fin-item"><span class="fin-label">Received</span><span class="fin-val green">${fmt(p.receivedAmount)}</span></div>
+<div class="fin-item"><span class="fin-label">Outstanding</span><span class="fin-val ${calcOutstanding(p)>0?'red':'green'}">${fmt(calcOutstanding(p))}</span></div>
+<div class="fin-item"><span class="fin-label">Profit</span><span class="fin-val ${profit>=0?'green':'red'}">${fmt(profit)}</span></div>
+</div></td></tr>`}).join('');
+}
+
+function toggleExpand(id){expandedRows.has(id)?expandedRows.delete(id):expandedRows.add(id);renderTable()}
+
+// ── DRAWER ──
+function openDrawer(id){
+const p=projects.find(x=>x.id===id);if(!p)return;
+document.getElementById('dCode').textContent=p.code;
+document.getElementById('dName').textContent=p.name;
+const ds=document.getElementById('dStatus');ds.textContent=p.status;ds.className='status-pill '+statusClass(p.status);
+document.getElementById('dProgressBar').style.width=p.progress+'%';
+document.getElementById('dProgressText').textContent=p.progress+'%';
+
+// Overview
+document.getElementById('dtab-overview').innerHTML=`<div class="detail-grid">
+<div class="detail-item"><div class="detail-label">Contractor</div><div class="detail-value">${p.contractor}</div></div>
+<div class="detail-item"><div class="detail-label">Project Type</div><div class="detail-value">${p.type}</div></div>
+<div class="detail-item detail-full"><div class="detail-label">Location</div><div class="detail-value">${p.location||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Start Date</div><div class="detail-value">${p.startDate||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Expected Completion</div><div class="detail-value">${p.expectedCompletion||'—'}</div></div>
+</div>
+<div class="progress-update"><label class="form-label" style="white-space:nowrap">Update Progress</label><input type="range" min="0" max="100" value="${p.progress}" id="dProgressSlider" oninput="document.getElementById('dSliderVal').textContent=this.value+'%'"><span id="dSliderVal">${p.progress}%</span><button class="btn btn-primary btn-sm" onclick="updateProgress('${p.id}')">Save</button></div>`;
+
+// Commercial
+document.getElementById('dtab-commercial').innerHTML=`<div class="detail-grid">
+<div class="detail-item"><div class="detail-label">Approved Amount</div><div class="detail-value">${fmt(p.approvedAmount)}</div></div>
+<div class="detail-item"><div class="detail-label">VAT</div><div class="detail-value">${fmt(p.vat)}</div></div>
+<div class="detail-item detail-full"><div class="detail-label">Total Contract Value</div><div class="detail-value highlight">${fmt(calcContract(p))}</div></div>
+<div class="detail-item"><div class="detail-label">Total Invoice</div><div class="detail-value">${fmt(p.totalInvoice)}</div></div>
+<div class="detail-item"><div class="detail-label">Received Amount</div><div class="detail-value" style="color:var(--fg)">${fmt(p.receivedAmount)}</div></div>
+<div class="detail-item detail-full"><div class="detail-label">Outstanding Amount</div><div class="detail-value ${calcOutstanding(p)>0?'red':''}">${fmt(calcOutstanding(p))}</div></div>
+</div>`;
+
+// Vendor
+const vb=calcVBalance(p);
+document.getElementById('dtab-vendor').innerHTML=p.vendor?`<div class="detail-grid">
+<div class="detail-item"><div class="detail-label">Assigned Vendor</div><div class="detail-value">${p.vendor}</div></div>
+<div class="detail-item"><div class="detail-label">Scope</div><div class="detail-value">${p.vendorScope||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Vendor Cost</div><div class="detail-value">${fmt(p.vendorCost)}</div></div>
+<div class="detail-item"><div class="detail-label">Vendor Paid</div><div class="detail-value">${fmt(p.vendorPaid)}</div></div>
+<div class="detail-item detail-full"><div class="detail-label">Vendor Balance Pending</div><div class="detail-value ${vb>0?'red':'green'}">${fmt(vb)}</div></div>
+</div>`:'<div class="empty-state"><i class="fas fa-user-slash" style="font-size:32px;opacity:.3;display:block;margin-bottom:8px"></i>No vendor assigned</div>';
+
+// Documents
+document.getElementById('dtab-documents').innerHTML=['drawings','rfi','finalSubmission'].map((k,i)=>{
+const labels=['Drawings','RFI','Final Submission'];
+const icons=['fa-drafting-compass','fa-question-circle','fa-check-circle'];
+const files=p.documents[k]||[];
+return `<div class="drawer-doc-section"><h4><i class="fas ${icons[i]}"></i> ${labels[i]}</h4>${files.length?`<ul class="drawer-doc-list">${files.map(f=>`<li><i class="fas fa-file"></i>${f}</li>`).join('')}</ul>`:'<div class="empty-state" style="padding:12px">No documents</div>'}</div>`}).join('');
+
+// Activity
+document.getElementById('dtab-activity').innerHTML=p.activities.length?`<div class="timeline">${p.activities.map(a=>`<div class="tl-item"><div class="tl-dot"></div><div class="tl-date">${a.date}</div><div class="tl-text">${a.text}</div></div>`).join('')}</div>`:'<div class="empty-state"><i class="fas fa-clock" style="font-size:32px;opacity:.3;display:block;margin-bottom:8px"></i>No activities yet</div>';
+
+// Reset to overview tab
+document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.dataset.dtab==='overview'));
+document.querySelectorAll('.dtab-content').forEach(c=>c.classList.toggle('active',c.id==='dtab-overview'));
+
+document.getElementById('drawer').classList.add('open');
+document.getElementById('drawerOverlay').classList.add('open');
+}
+
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open')}
+
+function updateProgress(id){
+const p=projects.find(x=>x.id===id);if(!p)return;
+const val=parseInt(document.getElementById('dProgressSlider').value);
+p.progress=val;
+if(val===100)p.status='Completed';
+else if(val>0&&p.status!=='Cancelled')p.status='In Progress';
+saveProjects();renderSummary();renderTable();openDrawer(id);
+showToast('Progress updated to '+val+'%');
+}
+
+// ── MODAL: STEPPER ──
+function openModal(){
+currentStep=1;formDocs={drawings:[],rfi:[],final:[]};
+resetForm();updateStepper();
+document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
+
+function updateStepper(){
+document.querySelectorAll('.stepper-step').forEach(s=>{
+const n=parseInt(s.dataset.step);
+s.classList.remove('active','done');
+if(n===currentStep)s.classList.add('active');
+else if(n<currentStep)s.classList.add('done');
+});
+document.querySelectorAll('.step-content').forEach(c=>c.classList.toggle('active',parseInt(c.dataset.step)===currentStep));
+const pct=((currentStep-1)/4)*100;
+document.getElementById('stepperFill').style.width=pct+'%';
+document.getElementById('prevBtn').style.visibility=currentStep===1?'hidden':'visible';
+const nb=document.getElementById('nextBtn');
+if(currentStep===5){nb.innerHTML='<i class="fas fa-check"></i> Save Project';nb.className='btn btn-primary'}
+else{nb.innerHTML='Next <i class="fas fa-arrow-right"></i>';nb.className='btn btn-primary'}
+}
+
+function resetForm(){
+['fCode','fName','fLocation','fStart','fEnd'].forEach(id=>document.getElementById(id).value='');
+['fContractor','fType','fVendor','fScope'].forEach(id=>document.getElementById(id).selectedIndex=0);
+['fApproved','fVat','fInvoice','fReceived','fVCost','fVPaid'].forEach(id=>document.getElementById(id).value='0');
+document.getElementById('fStatus').selectedIndex=0;
+document.getElementById('fProgress').value='0';
+document.querySelectorAll('.form-error').forEach(e=>e.style.display='none');
+document.querySelectorAll('.form-input.error,.form-select.error').forEach(e=>e.classList.remove('error'));
+['docListDrawings','docListRfi','docListFinal'].forEach(id=>document.getElementById(id).innerHTML='');
+calcForm();
+}
+
+// ── MODAL: NAVIGATION ──
+document.getElementById('nextBtn').addEventListener('click',()=>{
+if(currentStep===1){
+let valid=true;
+const code=document.getElementById('fCode').value.trim().toUpperCase();
+const name=document.getElementById('fName').value.trim();
+if(code.length>3){document.getElementById('errCode').style.display='block';document.getElementById('fCode').classList.add('error');valid=false}
+else{document.getElementById('errCode').style.display='none';document.getElementById('fCode').classList.remove('error')}
+if(!name){document.getElementById('errName').style.display='block';document.getElementById('fName').classList.add('error');valid=false}
+else{document.getElementById('errName').style.display='none';document.getElementById('fName').classList.remove('error')}
+if(!document.getElementById('fContractor').value){document.getElementById('errContractor').style.display='block';document.getElementById('fContractor').classList.add('error');valid=false}
+else{document.getElementById('errContractor').style.display='none';document.getElementById('fContractor').classList.remove('error')}
+if(!document.getElementById('fType').value){document.getElementById('errType').style.display='block';document.getElementById('fType').classList.add('error');valid=false}
+else{document.getElementById('errType').style.display='none';document.getElementById('fType').classList.remove('error')}
+if(!valid)return;
+}
+if(currentStep<5){currentStep++;updateStepper()}
+else{submitProject()}
+});
+document.getElementById('prevBtn').addEventListener('click',()=>{if(currentStep>1){currentStep--;updateStepper()}});
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('cancelBtn').addEventListener('click',closeModal);
+document.getElementById('modalOverlay').addEventListener('click',(e)=>{if(e.target===e.currentTarget)closeModal()});
+document.getElementById('drawerClose').addEventListener('click',closeDrawer);
+document.getElementById('drawerOverlay').addEventListener('click',closeDrawer);
+
+// ── MODAL: AUTO CALCULATE ──
+function calcForm(){
+const a=Number(document.getElementById('fApproved').value)||0;
+const v=Number(document.getElementById('fVat').value)||0;
+document.getElementById('fTotalContract').textContent=fmt(a+v);
+const inv=Number(document.getElementById('fInvoice').value)||0;
+const rec=Number(document.getElementById('fReceived').value)||0;
+document.getElementById('fOutstanding').textContent=fmt(inv-rec);
+const vc=Number(document.getElementById('fVCost').value)||0;
+const vp=Number(document.getElementById('fVPaid').value)||0;
+document.getElementById('fVBalance').textContent=fmt(vc-vp);
+}
+['fApproved','fVat','fInvoice','fReceived','fVCost','fVPaid'].forEach(id=>document.getElementById(id).addEventListener('input',calcForm));
+
+// Auto-suggest code from type
+document.getElementById('fType').addEventListener('change',(e)=>{document.getElementById('fCode').value=TYPE_CODES[e.target.value]||''});
+
+// ── MODAL: DOCUMENTS ──
+function addDoc(type){
+const inputId={drawings:'docDrawings',rfi:'docRfi',final:'docFinal'}[type];
+const listId={drawings:'docListDrawings',rfi:'docListRfi',final:'docListFinal'}[type];
+const input=document.getElementById(inputId);
+const list=document.getElementById(listId);
+Array.from(input.files).forEach(f=>{
+if(!formDocs[type].includes(f.name)){formDocs[type].push(f.name);
+const li=document.createElement('li');li.innerHTML=`<span><i class="fas fa-file" style="margin-right:6px;color:var(--g500)"></i>${f.name}</span><button class="doc-remove" onclick="removeDoc('${type}','${f.name}',this)"><i class="fas fa-times"></i></button>`;
+list.appendChild(li)}
+});input.value='';
+}
+function removeDoc(type,name,btn){formDocs[type]=formDocs[type].filter(n=>n!==name);btn.closest('li').remove()}
+
+// ── MODAL: SUBMIT ──
+function submitProject(){
+const p={
+id:nextId(),
+code:document.getElementById('fCode').value.trim().toUpperCase(),
+name:document.getElementById('fName').value.trim(),
+contractor:document.getElementById('fContractor').value,
+type:document.getElementById('fType').value,
+location:document.getElementById('fLocation').value.trim(),
+startDate:document.getElementById('fStart').value,
+expectedCompletion:document.getElementById('fEnd').value,
+status:document.getElementById('fStatus').value,
+progress:parseInt(document.getElementById('fProgress').value)||0,
+approvedAmount:Number(document.getElementById('fApproved').value)||0,
+vat:Number(document.getElementById('fVat').value)||0,
+totalInvoice:Number(document.getElementById('fInvoice').value)||0,
+receivedAmount:Number(document.getElementById('fReceived').value)||0,
+vendor:document.getElementById('fVendor').value,
+vendorScope:document.getElementById('fScope').value,
+vendorCost:Number(document.getElementById('fVCost').value)||0,
+vendorPaid:Number(document.getElementById('fVPaid').value)||0,
+documents:{drawings:[...formDocs.drawings],rfi:[...formDocs.rfi],finalSubmission:[...formDocs.final]},
+activities:[{date:new Date().toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'}),text:'Project created'}]
+};
+projects.unshift(p);saveProjects();closeModal();renderSummary();renderTable();
+showToast('Project '+p.code+' - '+p.name+' created successfully');
+}
+
+// ── SEARCH & FILTER ──
+document.getElementById('searchInput').addEventListener('input',(e)=>{searchQuery=e.target.value;renderTable()});
+document.querySelectorAll('.filter-pill').forEach(pill=>{pill.addEventListener('click',()=>{
+currentFilter=pill.dataset.filter;
+document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p===pill));
+renderSummary();renderTable()})});
+
+// ── DRAWER TABS ──
+document.querySelectorAll('.dtab').forEach(tab=>{tab.addEventListener('click',()=>{
+document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.dtab-content').forEach(c=>c.classList.remove('active'));
+tab.classList.add('active');
+document.getElementById('dtab-'+tab.dataset.dtab).classList.add('active')})});
+
+// ── SIDEBAR ──
+const sidebar=document.getElementById('sidebar'),mobileToggle=document.getElementById('mobileToggle'),overlay=document.getElementById('sidebarOverlay');
+mobileToggle.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('active')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('active')});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',(e)=>{document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));e.currentTarget.classList.add('active');if(window.innerWidth<=768){sidebar.classList.remove('open');overlay.classList.remove('active')}})});
+
+// ── TOAST ──
+function showToast(msg,type='success'){const t=document.createElement('div');t.className='toast toast-'+type;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3000)}
+
+// ── INIT ──
+(function init(){
+// Populate dropdowns
+const fc=document.getElementById('fContractor');
+CONTRACTORS.forEach(c=>{const o=document.createElement('option');o.textContent=c;fc.appendChild(o)});
+const fv=document.getElementById('fVendor');
+VENDORS.forEach(v=>{const o=document.createElement('option');o.textContent=v;fv.appendChild(o)});
+
+document.getElementById('addProjectBtn').addEventListener('click',openModal);
+
+renderSummary();
+renderTable();
+})();
+</script>
+</body>
+</html>
