@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDQS - Documents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--fg:#1B5E20;--fh:#2E7D32;--fl:#E8F5E9;--fm:#4CAF50;--w:#FFF;--bk:#121212;--g50:#FAFAFA;--g100:#F5F5F5;--g200:#EEE;--g300:#E0E0E0;--g500:#757575;--g700:#424242;--g900:#212121;--sw:70px;--swe:240px;--hh:64px;--red:#C62828;--blue:#1565C0;--orange:#F57C00;--purple:#7B1FA2;--teal:#00796B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--g100);color:var(--g900);overflow:hidden;height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sw);background:var(--bk);color:var(--w);z-index:1000;transition:width .3s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;flex-direction:column}
+.sidebar:hover{width:var(--swe)}
+.sidebar-logo{height:var(--hh);display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);gap:12px;white-space:nowrap}
+.sidebar-logo i{font-size:24px;color:var(--fm);min-width:30px;text-align:center}
+.sidebar-logo span{font-family:'Playfair Display',serif;font-size:18px;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .sidebar-logo span{opacity:1}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto;overflow-x:hidden}
+.nav-item{display:flex;align-items:center;padding:12px 20px;color:var(--g300);text-decoration:none;gap:12px;cursor:pointer;transition:all .2s;white-space:nowrap;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--w)}
+.nav-item.active{background:rgba(27,94,32,.2);color:var(--fm);border-left-color:var(--fm)}
+.nav-item i{font-size:18px;min-width:30px;text-align:center}
+.nav-item span{font-size:14px;font-weight:500;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .nav-item span{opacity:1}
+.main-wrapper{margin-left:var(--sw);height:100vh;display:flex;flex-direction:column;transition:margin-left .3s}
+.header{height:var(--hh);background:var(--w);border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:500;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:16px}
+.mobile-toggle{display:none;background:none;border:none;font-size:20px;color:var(--g700);cursor:pointer}
+.header-title h1{font-size:18px;font-weight:700;color:var(--bk)}
+.header-title p{font-size:12px;color:var(--g500)}
+.header-right{display:flex;align-items:center;gap:16px}
+.profile-icon{width:36px;height:36px;border-radius:50%;background:var(--fg);color:var(--w);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;cursor:pointer}
+.content{flex:1;overflow-y:auto;padding:24px;background:var(--g100)}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-header h2{font-size:22px;font-weight:700}
+.btn{padding:10px 20px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--fg);color:var(--w)}.btn-primary:hover{background:var(--fh)}
+.btn-secondary{background:var(--g100);color:var(--g700);border:1px solid var(--g300)}.btn-secondary:hover{background:var(--g200)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-outline{background:transparent;color:var(--fg);border:1px solid var(--fg)}.btn-outline:hover{background:var(--fl)}
+.filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.search-input{padding:8px 14px 8px 36px;border:1px solid var(--g300);border-radius:6px;font-size:14px;outline:none;width:280px;background:var(--w) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23757575' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E") 10px center/16px no-repeat;transition:border-color .2s}
+.search-input:focus{border-color:var(--fg)}
+.filter-pills{display:flex;gap:0;border:1px solid var(--g300);border-radius:6px;overflow:hidden}
+.filter-pill{padding:8px 16px;border:none;background:var(--w);font-size:13px;font-weight:500;color:var(--g500);cursor:pointer;transition:all .2s;white-space:nowrap}
+.filter-pill:hover{color:var(--fg)}.filter-pill.active{background:var(--fg);color:var(--w)}
+
+/* Category Cards */
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.cat-card{background:var(--w);border-radius:8px;padding:20px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.cat-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+.cat-card.active-filter{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.cat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.cat-projects::before{background:var(--fg)}.cat-clients::before{background:var(--blue)}.cat-vendors::before{background:var(--orange)}.cat-invoices::before{background:var(--purple)}
+.cat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px}
+.cat-projects .cat-icon{background:var(--fl);color:var(--fg)}.cat-clients .cat-icon{background:#E3F2FD;color:var(--blue)}.cat-vendors .cat-icon{background:#FFF3E0;color:var(--orange)}.cat-invoices .cat-icon{background:#F3E5F5;color:var(--purple)}
+.cat-name{font-size:14px;font-weight:600;color:var(--g900);margin-bottom:4px}
+.cat-count{font-size:12px;color:var(--g500)}
+
+/* Document Grid */
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px}
+.doc-card{background:var(--w);border-radius:8px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);padding:16px;transition:all .2s;display:flex;align-items:flex-start;gap:12px}
+.doc-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.doc-icon{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.doc-icon.pdf{background:#FFEBEE;color:var(--red)}.doc-icon.dwg{background:#E3F2FD;color:var(--blue)}.doc-icon.xlsx{background:#E8F5E9;color:var(--fg)}.doc-icon.img{background:#FFF3E0;color:var(--orange)}.doc-icon.doc{background:#E3F2FD;color:var(--blue)}.doc-icon.other{background:var(--g100);color:var(--g500)}
+.doc-info{flex:1;min-width:0}
+.doc-name{font-size:14px;font-weight:600;color:var(--g900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-meta{font-size:12px;color:var(--g500);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.doc-meta span{display:inline-flex;align-items:center;gap:4px}
+.doc-actions{display:flex;gap:4px;flex-shrink:0}
+.doc-action{width:28px;height:28px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s;background:var(--g100);color:var(--g500)}
+.doc-action:hover{background:var(--fl);color:var(--fg)}
+
+/* Section Title */
+.section-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:var(--g900)}
+.section-title .count{font-size:13px;font-weight:500;color:var(--g500);font-weight:400;background:var(--g100);padding:2px 8px;border-radius:10px}
+
+/* Empty State */
+.empty-state{text-align:center;padding:60px 24px;color:var(--g500)}.empty-state i{display:block;font-size:48px;opacity:.2;margin-bottom:12px}.empty-state p{font-size:15px}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--w);border-radius:12px;width:520px;max-width:95vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--g200)}
+.modal-header h2{font-size:18px;font-weight:700}
+.modal-close{width:36px;height:36px;border:none;background:var(--g100);border-radius:50%;cursor:pointer;font-size:18px;color:var(--g500);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:#FFEBEE;color:var(--red)}
+.modal-body{flex:1;overflow-y:auto;padding:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-grid .full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column}
+.form-label{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:6px}
+.form-input,.form-select,.form-textarea{padding:10px 12px;border:1px solid var(--g300);border-radius:6px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:var(--w);color:var(--g900)}
+.form-textarea{resize:vertical;min-height:60px}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--fg)}
+.form-input.error,.form-select.error{border-color:var(--red)}
+.form-error{font-size:11px;color:var(--red);margin-top:4px;display:none}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;border-top:1px solid var(--g200)}
+.file-upload{position:relative;display:flex;align-items:center;gap:10px;padding:20px;border:2px dashed var(--g300);border-radius:8px;cursor:pointer;transition:all .2s;text-align:center}
+.file-upload:hover{border-color:var(--fg);background:var(--fl)}
+.file-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.file-upload i{font-size:28px;color:var(--g500);margin-bottom:8px;display:block}
+.file-upload span{font-size:13px;color:var(--g500)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;color:var(--w);z-index:9999;transition:transform .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}.toast-success{background:var(--fg)}
+
+@media(max-width:1024px){.cat-grid{grid-template-columns:repeat(2,1fr)}.doc-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}.form-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{width:var(--swe);left:calc(-1*var(--swe))}.sidebar.open{left:0}.sidebar:hover{width:var(--swe)}.sidebar .nav-item span,.sidebar:hover .nav-item span{opacity:1}.sidebar .sidebar-logo span,.sidebar:hover .sidebar-logo span{opacity:1}.main-wrapper{margin-left:0}.mobile-toggle{display:block}.content{padding:16px}.search-input{width:100%}.filter-bar{flex-direction:column;align-items:stretch}.filter-pills{overflow-x:auto}.modal{max-width:100vw;max-height:100vh;border-radius:0}.cat-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.cat-grid{grid-template-columns:1fr}.doc-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-logo"><i class="fas fa-hard-hat"></i><span>THULIR FZE</span></div>
+<nav class="sidebar-nav">
+<a class="nav-item" href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+<a class="nav-item" href="projects.html"><i class="fas fa-building"></i><span>Projects</span></a>
+<a class="nav-item" href="clients.html"><i class="fas fa-users"></i><span>Clients</span></a>
+<a class="nav-item" href="vendors.html"><i class="fas fa-truck"></i><span>Vendors</span></a>
+<a class="nav-item" href="quotations.html"><i class="fas fa-file-alt"></i><span>Quotations</span></a>
+<a class="nav-item" href="invoices.html"><i class="fas fa-file-invoice-dollar"></i><span>Invoices</span></a>
+<a class="nav-item" href="payments.html"><i class="fas fa-money-check-alt"></i><span>Payments</span></a>
+<a class="nav-item" href="receipts.html"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+<a class="nav-item" href="expenses.html"><i class="fas fa-credit-card"></i><span>Expenses</span></a>
+<a class="nav-item" href="reports.html"><i class="fas fa-chart-pie"></i><span>Reports</span></a>
+<a class="nav-item active" href="documents.html"><i class="fas fa-folder-open"></i><span>Documents</span></a>
+<a class="nav-item" href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+</nav>
+</aside>
+
+<div class="main-wrapper">
+<header class="header">
+<div class="header-left">
+<button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+<div class="header-title"><h1>Documents</h1><p>Thulir Design & QS Services FZE</p></div>
+</div>
+<div class="header-right"><div class="profile-icon">TD</div></div>
+</header>
+<main class="content">
+<div class="page-header">
+<div><h2>Document Storage</h2></div>
+<button class="btn btn-primary" id="uploadBtn"><i class="fas fa-cloud-upload-alt"></i> Upload Document</button>
+</div>
+
+<div class="filter-bar">
+<div style="position:relative"><input type="text" class="search-input" id="searchInput" placeholder="Search documents..."></div>
+<div class="filter-pills" id="filterPills">
+<button class="filter-pill active" data-filter="All">All</button>
+<button class="filter-pill" data-filter="Projects">Projects</button>
+<button class="filter-pill" data-filter="Clients">Clients</button>
+<button class="filter-pill" data-filter="Vendors">Vendors</button>
+<button class="filter-pill" data-filter="Invoices">Invoices</button>
+</div>
+</div>
+
+<!-- CATEGORY CARDS -->
+<div class="cat-grid" id="catGrid"></div>
+
+<!-- DOCUMENT LIST -->
+<div id="docSections"></div>
+
+<div class="empty-state" id="noResults" style="display:none"><i class="fas fa-search"></i><p>No documents found</p></div>
+</main>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<div class="modal-header"><h2>Upload Document</h2><button class="modal-close" id="modalClose">&times;</button></div>
+<div class="modal-body">
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Category</label><select class="form-select" id="fCategory"><option value="">Select Category</option><option>Projects</option><option>Clients</option><option>Vendors</option><option>Invoices</option></select><div class="form-error" id="errCat">Required</div></div>
+<div class="form-group"><label class="form-label">Sub-Category</label><select class="form-select" id="fSubCat"><option value="">Select Sub-Category</option></select><div class="form-error" id="errSub">Required</div></div>
+<div class="form-group full"><label class="form-label">Document Name</label><input type="text" class="form-input" id="fName" placeholder="e.g. Villa_GF_Rebar_Drawing.dwg"><div class="form-error" id="errName">Required</div></div>
+<div class="form-group full"><label class="form-label">Reference</label><input type="text" class="form-input" id="fRef" placeholder="e.g. Dubai Villa, INV-001"></div>
+<div class="form-group full">
+<label class="form-label">Upload File</label>
+<div class="file-upload" id="fileUploadArea">
+<input type="file" id="fFile" onchange="document.getElementById('fileLabel').textContent=this.files[0]?this.files[0].name:'No file chosen'">
+<i class="fas fa-cloud-upload-alt"></i>
+<span id="fileLabel">Click to choose file or drag & drop</span>
+</div>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+<button class="btn btn-primary" id="saveBtn"><i class="fas fa-check"></i> Upload</button>
+</div>
+</div>
+</div>
+
+<script>
+const SUB_CATS={
+Projects:["Drawings","RFI","Final Submission"],
+Clients:["PO","Work Order"],
+Vendors:["Bills"],
+Invoices:["Invoice PDFs"]
+};
+
+function fileIcon(name){
+const ext=name.split('.').pop().toLowerCase();
+if(ext==='pdf')return 'pdf';
+if(ext==='dwg')return 'dwg';
+if(ext==='xlsx'||ext==='xls')return 'xlsx';
+if(ext==='jpg'||ext==='jpeg'||ext==='png')return 'img';
+if(ext==='doc'||ext==='docx')return 'doc';
+return 'other';
+}
+
+const DEFAULT_DOCS=[
+{id:"DOC-001",category:"Projects",subCat:"Drawings",name:"Villa_GF_Rebar_Drawing.dwg",ref:"Dubai Villa Rebar Work",date:"2026-04-20",size:"2.4 MB"},
+{id:"DOC-002",category:"Projects",subCat:"Drawings",name:"Villa_FF_Rebar_Drawing.dwg",ref:"Dubai Villa Rebar Work",date:"2026-05-10",size:"1.8 MB"},
+{id:"DOC-003",category:"Projects",subCat:"Drawings",name:"Tower_Basement_Rebar.dwg",ref:"Downtown Tower Rebar",date:"2026-07-05",size:"3.2 MB"},
+{id:"DOC-004",category:"Projects",subCat:"Drawings",name:"Tower_Typical_Floor.dwg",ref:"Downtown Tower Rebar",date:"2026-07-12",size:"2.9 MB"},
+{id:"DOC-005",category:"Projects",subCat:"RFI",name:"RFI-001_Coverage.pdf",ref:"Dubai Villa Rebar Work",date:"2026-05-25",size:"450 KB"},
+{id:"DOC-006",category:"Projects",subCat:"RFI",name:"RFI-001_Bar_Sizes.pdf",ref:"Downtown Tower Rebar",date:"2026-07-18",size:"380 KB"},
+{id:"DOC-007",category:"Projects",subCat:"Final Submission",name:"Marina_Final_Structural_Report.pdf",ref:"Marina Tower Structural Design",date:"2026-06-28",size:"5.6 MB"},
+{id:"DOC-008",category:"Projects",subCat:"Final Submission",name:"Naboodah_Final_BOQ.xlsx",ref:"Naboodah Complex BOQ",date:"2026-05-15",size:"1.2 MB"},
+{id:"DOC-009",category:"Projects",subCat:"Drawings",name:"Complex_Arch_Plan.dwg",ref:"Naboodah Complex BOQ",date:"2026-02-10",size:"4.1 MB"},
+{id:"DOC-010",category:"Projects",subCat:"Drawings",name:"Complex_Struct.dwg",ref:"Naboodah Complex BOQ",date:"2026-02-15",size:"3.8 MB"},
+{id:"DOC-011",category:"Projects",subCat:"Drawings",name:"Villa_Arch_Plan.dwg",ref:"Al Mamzar Villa QS",date:"2026-06-05",size:"2.1 MB"},
+{id:"DOC-012",category:"Projects",subCat:"Drawings",name:"Palm_Villa_Plan.pdf",ref:"Palm Jumeirah Estimation",date:"2026-07-10",size:"1.5 MB"},
+{id:"DOC-013",category:"Clients",subCat:"PO",name:"PO-001_ABC_Construction.pdf",ref:"ABC Construction LLC",date:"2026-04-10",size:"320 KB"},
+{id:"DOC-014",category:"Clients",subCat:"PO",name:"PO-002_XYZ_Builders.pdf",ref:"XYZ Builders FZCO",date:"2026-01-08",size:"290 KB"},
+{id:"DOC-015",category:"Clients",subCat:"Work Order",name:"WO-001_Delta_Group.pdf",ref:"Delta Group Contracting",date:"2026-06-01",size:"250 KB"},
+{id:"DOC-016",category:"Clients",subCat:"Work Order",name:"WO-002_Gulf_Eng.pdf",ref:"Gulf Engineering Consultants",date:"2026-06-05",size:"270 KB"},
+{id:"DOC-017",category:"Vendors",subCat:"Bills",name:"VBL-001_Technical_Drafting.pdf",ref:"Technical Drafting Co.",date:"2026-05-01",size:"180 KB"},
+{id:"DOC-018",category:"Vendors",subCat:"Bills",name:"VBL-003_Design_Masters.pdf",ref:"Design Masters LLC",date:"2026-03-15",size:"210 KB"},
+{id:"DOC-019",category:"Vendors",subCat:"Bills",name:"VBL-005_QS_Masters.pdf",ref:"QS Masters UAE",date:"2026-06-15",size:"195 KB"},
+{id:"DOC-020",category:"Vendors",subCat:"Bills",name:"VBL-007_Technical_Drafting_2.pdf",ref:"Technical Drafting Co.",date:"2026-07-20",size:"188 KB"},
+{id:"DOC-021",category:"Invoices",subCat:"Invoice PDFs",name:"INV-001_ABC_Construction.pdf",ref:"INV-001",date:"2026-07-01",size:"420 KB"},
+{id:"DOC-022",category:"Invoices",subCat:"Invoice PDFs",name:"INV-002_XYZ_Builders.pdf",ref:"INV-002",date:"2026-06-15",size:"480 KB"},
+{id:"DOC-023",category:"Invoices",subCat:"Invoice PDFs",name:"INV-003_Downtown_Tower.pdf",ref:"INV-003",date:"2026-07-10",size:"395 KB"},
+{id:"DOC-024",category:"Invoices",subCat:"Invoice PDFs",name:"INV-007_Naboodah.pdf",ref:"INV-007",date:"2026-06-01",size:"410 KB"}
+];
+
+let docs=loadDocs();
+let currentFilter="All";
+let searchQuery="";
+
+function loadDocs(){try{const d=localStorage.getItem('tdqs_documents');return d?JSON.parse(d):JSON.parse(JSON.stringify(DEFAULT_DOCS))}catch{return JSON.parse(JSON.stringify(DEFAULT_DOCS))}}
+function saveDocs(){localStorage.setItem('tdqs_documents',JSON.stringify(docs))}
+function nextId(){const nums=docs.map(d=>parseInt(d.id.split('-')[1])||0);return "DOC-"+String(Math.max(0,...nums)+1).padStart(3,'0')}
+function today(){return new Date().toISOString().split('T')[0]}
+
+// ── CATEGORY CARDS ──
+function renderCatCards(){
+const counts={All:docs.length,Projects:0,Clients:0,Vendors:0,Invoices:0};
+docs.forEach(d=>{counts[d.category]=(counts[d.category]||0)+1});
+const catConfig=[
+{key:"All",icon:"fa-folder",label:"All Documents",cls:""},
+{key:"Projects",icon:"fa-building",label:"Projects",cls:"cat-projects"},
+{key:"Clients",icon:"fa-users",label:"Clients",cls:"cat-clients"},
+{key:"Vendors",icon:"fa-truck",label:"Vendors",cls:"cat-vendors"},
+{key:"Invoices",icon:"fa-file-invoice-dollar",label:"Invoices",cls:"cat-invoices"}
+];
+document.getElementById('catGrid').innerHTML=catConfig.map(c=>`<div class="cat-card ${c.cls} ${currentFilter===c.key?'active-filter':''}" onclick="applyFilter('${c.key}')">
+<div class="cat-icon"><i class="fas ${c.icon}"></i></div>
+<div class="cat-name">${c.label}</div>
+<div class="cat-count">${counts[c.key]||0} files</div>
+</div>`).join('');
+}
+
+function applyFilter(f){currentFilter=f;document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p.dataset.filter===f));renderCatCards();renderDocs()}
+
+// ── DOCUMENT LIST ──
+function renderDocs(){
+const filtered=docs.filter(d=>{
+const mf=currentFilter==='All'||d.category===currentFilter;
+const s=searchQuery.toLowerCase();
+const ms=!s||d.name.toLowerCase().includes(s)||d.ref.toLowerCase().includes(s)||d.subCat.toLowerCase().includes(s)||d.category.toLowerCase().includes(s);
+return mf&&ms}).sort((a,b)=>b.date.localeCompare(a.date));
+
+const noRes=document.getElementById('noResults');
+if(!filtered.length){document.getElementById('docSections').innerHTML='';noRes.style.display='block';return}
+noRes.style.display='none';
+
+const grouped={};
+filtered.forEach(d=>{
+const key=d.category+' / '+d.subCat;
+if(!grouped[key])grouped[key]={cat:d.category,subCat:d.subCat,items:[]};
+grouped[key].items.push(d);
+});
+
+let html='';
+Object.values(grouped).forEach(g=>{
+const catIcons={Projects:'fa-building',Clients:'fa-users',Vendors:'fa-truck',Invoices:'fa-file-invoice-dollar'};
+html+=`<div class="card" style="margin-bottom:24px">
+<div class="section-title"><i class="fas ${catIcons[g.cat]||'fa-folder'}" style="color:var(--fg)"></i> ${g.subCat} <span class="count">${g.items.length}</span></div>
+<div class="doc-grid">${g.items.map(d=>`<div class="doc-card">
+<div class="doc-icon ${fileIcon(d.name)}"><i class="fas ${d.name.endsWith('.pdf')?'fa-file-pdf':d.name.endsWith('.dwg')?'fa-drafting-compass':d.name.endsWith('.xlsx')?'fa-file-excel':d.name.endsWith('.jpg')||d.name.endsWith('.png')?'fa-file-image':'fa-file'}"></i></div>
+<div class="doc-info">
+<div class="doc-name" title="${d.name}">${d.name}</div>
+<div class="doc-meta"><span><i class="fas fa-calendar"></i> ${d.date}</span><span><i class="fas fa-tag"></i> ${d.ref}</span><span><i class="fas fa-weight-hanging"></i> ${d.size}</span></div>
+</div>
+<div class="doc-actions">
+<button class="doc-action" title="Download" onclick="showToast('Download: ${d.name}')"><i class="fas fa-download"></i></button>
+<button class="doc-action" title="Delete" onclick="deleteDoc('${d.id}')"><i class="fas fa-trash"></i></button>
+</div>
+</div>`).join('')}</div></div>`;
+});
+document.getElementById('docSections').innerHTML=html;
+}
+
+function deleteDoc(id){
+docs=docs.filter(d=>d.id!==id);
+saveDocs();renderCatCards();renderDocs();
+showToast('Document deleted');
+}
+
+// ── SUB-CATEGORY DROPDOWN ──
+document.getElementById('fCategory').addEventListener('change',function(){
+const cat=this.value;
+const sel=document.getElementById('fSubCat');
+sel.innerHTML='<option value="">Select Sub-Category</option>';
+if(cat&&SUB_CATS[cat]){SUB_CATS[cat].forEach(s=>{const o=document.createElement('option');o.textContent=s;sel.appendChild(o)})}
+document.getElementById('errCat').style.display='none';this.classList.remove('error');
+});
+
+// ── UPLOAD ──
+document.getElementById('uploadBtn').addEventListener('click',openModal);
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('cancelBtn').addEventListener('click',closeModal);
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+
+function openModal(){
+document.getElementById('fCategory').selectedIndex=0;
+document.getElementById('fSubCat').innerHTML='<option value="">Select Sub-Category</option>';
+document.getElementById('fName').value='';
+document.getElementById('fRef').value='';
+document.getElementById('fFile').value='';
+document.getElementById('fileLabel').textContent='Click to choose file or drag & drop';
+document.querySelectorAll('.form-error').forEach(e=>e.style.display='none');
+document.querySelectorAll('.form-input.error,.form-select.error').forEach(e=>e.classList.remove('error'));
+document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
+
+document.getElementById('saveBtn').addEventListener('click',()=>{
+let valid=true;
+if(!document.getElementById('fCategory').value){document.getElementById('errCat').style.display='block';document.getElementById('fCategory').classList.add('error');valid=false}
+if(!document.getElementById('fSubCat').value){document.getElementById('errSub').style.display='block';document.getElementById('fSubCat').classList.add('error');valid=false}
+if(!document.getElementById('fName').value.trim()){document.getElementById('errName').style.display='block';document.getElementById('fName').classList.add('error');valid=false}
+if(!valid)return;
+
+const fileInput=document.getElementById('fFile');
+const fileName=fileInput.files[0]?fileInput.files[0].name:document.getElementById('fName').value.trim();
+const ext=fileName.includes('.')?'':'.pdf';
+const finalName=fileName.includes('.')?fileName:fileName+ext;
+const sizes=['180 KB','250 KB','320 KB','380 KB','420 KB','480 KB','1.2 MB','1.5 MB','1.8 MB','2.1 MB','2.4 MB','2.9 MB','3.2 MB','3.8 MB','4.1 MB','5.6 MB'];
+
+docs.unshift({
+id:nextId(),
+category:document.getElementById('fCategory').value,
+subCat:document.getElementById('fSubCat').value,
+name:finalName,
+ref:document.getElementById('fRef').value||'—',
+date:today(),
+size:sizes[Math.floor(Math.random()*sizes.length)]
+});
+saveDocs();closeModal();renderCatCards();renderDocs();
+showToast('Document uploaded: '+finalName);
+});
+
+// ── SEARCH ──
+document.getElementById('searchInput').addEventListener('input',e=>{searchQuery=e.target.value;renderDocs()});
+
+// ── FILTER PILLS ──
+document.querySelectorAll('.filter-pill').forEach(pill=>{pill.addEventListener('click',()=>{currentFilter=pill.dataset.filter;document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p===pill));renderCatCards();renderDocs()})});
+
+// ── SIDEBAR ──
+const sidebar=document.getElementById('sidebar'),mobileToggle=document.getElementById('mobileToggle'),overlay=document.getElementById('sidebarOverlay');
+mobileToggle.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('active')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('active')});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',e=>{document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));e.currentTarget.classList.add('active');if(window.innerWidth<=768){sidebar.classList.remove('open');overlay.classList.remove('active')}})});
+
+function showToast(msg,type='success'){const t=document.createElement('div');t.className='toast toast-'+type;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3000)}
+
+renderCatCards();
+renderDocs();
+</script>
+</body>
+</html>
