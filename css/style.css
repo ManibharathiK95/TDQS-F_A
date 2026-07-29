@@ -274,3 +274,32 @@ td { color: var(--gray-900); }
 @media (max-width: 480px) {
     .kpi-grid, .sub-kpi-grid { grid-template-columns: 1fr; }
 }
+
+/* Outstanding Receivable / Payable Table Fix */
+#toggle-receivable table th:first-child,
+#toggle-receivable table td:first-child,
+#toggle-payable table th:first-child,
+#toggle-payable table td:first-child {
+    width:60%;
+    text-align:left;
+}
+
+#toggle-receivable table th:last-child,
+#toggle-receivable table td:last-child,
+#toggle-payable table th:last-child,
+#toggle-payable table td:last-child {
+    width:40%;
+    text-align:right;
+}
+
+#toggle-receivable table,
+#toggle-payable table {
+    table-layout:fixed;
+}
+
+#toggle-receivable th,
+#toggle-receivable td,
+#toggle-payable th,
+#toggle-payable td {
+    padding:10px 16px;
+}
