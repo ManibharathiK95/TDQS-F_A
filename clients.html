@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDQS - Clients</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--fg:#1B5E20;--fh:#2E7D32;--fl:#E8F5E9;--fm:#4CAF50;--w:#FFF;--bk:#121212;--g50:#FAFAFA;--g100:#F5F5F5;--g200:#EEE;--g300:#E0E0E0;--g500:#757575;--g700:#424242;--g900:#212121;--sw:70px;--swe:240px;--hh:64px;--red:#C62828;--blue:#1565C0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--g100);color:var(--g900);overflow:hidden;height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sw);background:var(--bk);color:var(--w);z-index:1000;transition:width .3s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;flex-direction:column}
+.sidebar:hover{width:var(--swe)}
+.sidebar-logo{height:var(--hh);display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);gap:12px;white-space:nowrap}
+.sidebar-logo i{font-size:24px;color:var(--fm);min-width:30px;text-align:center}
+.sidebar-logo span{font-family:'Playfair Display',serif;font-size:18px;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .sidebar-logo span{opacity:1}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto;overflow-x:hidden}
+.nav-item{display:flex;align-items:center;padding:12px 20px;color:var(--g300);text-decoration:none;gap:12px;cursor:pointer;transition:all .2s;white-space:nowrap;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--w)}
+.nav-item.active{background:rgba(27,94,32,.2);color:var(--fm);border-left-color:var(--fm)}
+.nav-item i{font-size:18px;min-width:30px;text-align:center}
+.nav-item span{font-size:14px;font-weight:500;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .nav-item span{opacity:1}
+.main-wrapper{margin-left:var(--sw);height:100vh;display:flex;flex-direction:column;transition:margin-left .3s}
+.header{height:var(--hh);background:var(--w);border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:500;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:16px}
+.mobile-toggle{display:none;background:none;border:none;font-size:20px;color:var(--g700);cursor:pointer}
+.header-title h1{font-size:18px;font-weight:700;color:var(--bk)}
+.header-title p{font-size:12px;color:var(--g500)}
+.header-right{display:flex;align-items:center;gap:16px}
+.profile-icon{width:36px;height:36px;border-radius:50%;background:var(--fg);color:var(--w);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;cursor:pointer}
+.content{flex:1;overflow-y:auto;padding:24px;background:var(--g100)}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-header h2{font-size:22px;font-weight:700}
+.btn{padding:10px 20px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--fg);color:var(--w)}.btn-primary:hover{background:var(--fh)}
+.btn-secondary{background:var(--g100);color:var(--g700);border:1px solid var(--g300)}.btn-secondary:hover{background:var(--g200)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-outline{background:transparent;color:var(--fg);border:1px solid var(--fg)}.btn-outline:hover{background:var(--fl)}
+.filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.search-input{padding:8px 14px 8px 36px;border:1px solid var(--g300);border-radius:6px;font-size:14px;outline:none;width:280px;background:var(--w) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23757575' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E") 10px center/16px no-repeat;transition:border-color .2s}
+.search-input:focus{border-color:var(--fg)}
+.filter-pills{display:flex;gap:0;border:1px solid var(--g300);border-radius:6px;overflow:hidden}
+.filter-pill{padding:8px 16px;border:none;background:var(--w);font-size:13px;font-weight:500;color:var(--g500);cursor:pointer;transition:all .2s;white-space:nowrap}
+.filter-pill:hover{color:var(--fg)}
+.filter-pill.active{background:var(--fg);color:var(--w)}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px}
+.summary-card{background:var(--w);border-radius:8px;padding:20px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.summary-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+.summary-card.active-filter{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.summary-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.sc-total::before{background:var(--fg)}.sc-active::before{background:var(--blue)}.sc-contract::before{background:var(--fm)}.sc-outstanding::before{background:var(--red)}
+.sc-title{font-size:13px;color:var(--g500);font-weight:500;margin-bottom:8px}
+.sc-value{font-size:28px;font-weight:700}
+.sc-total .sc-value{color:var(--fg)}.sc-active .sc-value{color:var(--blue)}.sc-contract .sc-value{color:var(--fm)}.sc-outstanding .sc-value{color:var(--red)}
+.sc-sub{font-size:12px;color:var(--g500);margin-top:4px}
+.table-card{background:var(--w);border-radius:8px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);overflow:hidden}
+.table-container{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--g200);font-size:14px}
+th{font-weight:600;color:var(--g500);font-size:12px;text-transform:uppercase;letter-spacing:.5px;background:var(--g50);position:sticky;top:0}
+tr:hover td{background:var(--g50)}
+.expanded-row td{padding:0;border-bottom:1px solid var(--g200);background:var(--g50)}
+.fin-strip{display:flex;gap:0;padding:16px;overflow-x:auto;flex-wrap:nowrap}
+.fin-item{min-width:140px;padding:8px 16px;border-right:1px solid var(--g200);display:flex;flex-direction:column;gap:2px}
+.fin-item:last-child{border-right:none}
+.fin-label{font-size:11px;color:var(--g500);text-transform:uppercase;letter-spacing:.3px}
+.fin-val{font-size:15px;font-weight:700}
+.fin-val.green{color:var(--fg)}.fin-val.red{color:var(--red)}.fin-val.blue{color:var(--blue)}.fin-val.dark{color:var(--g900)}
+.status-pill{padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap;display:inline-block}
+.sp-active{background:var(--fl);color:var(--fh)}.sp-inactive{background:var(--g100);color:var(--g500)}.sp-blacklisted{background:#FFEBEE;color:var(--red)}
+.code-badge{font-weight:700;color:var(--fg);font-size:13px;background:var(--fl);padding:3px 8px;border-radius:4px}
+.type-tag{font-size:12px;color:var(--g500);background:var(--g100);padding:2px 8px;border-radius:4px}
+.action-btns{display:flex;gap:6px}
+.action-btn{width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;background:var(--g100);color:var(--g500)}
+.action-btn:hover{background:var(--fl);color:var(--fg)}
+.action-btn.expanded{background:var(--fl);color:var(--fg);transform:rotate(90deg)}
+.no-results{text-align:center;padding:48px 24px;color:var(--g500)}
+.no-results i{font-size:48px;margin-bottom:12px;opacity:.3}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--w);border-radius:12px;width:720px;max-width:95vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--g200)}
+.modal-header h2{font-size:18px;font-weight:700}
+.modal-close{width:36px;height:36px;border:none;background:var(--g100);border-radius:50%;cursor:pointer;font-size:18px;color:var(--g500);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:#FFEBEE;color:var(--red)}
+.modal-body{flex:1;overflow-y:auto;padding:24px}
+.form-section{margin-bottom:28px}
+.form-section-title{font-size:15px;font-weight:700;color:var(--fg);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--fl);display:flex;align-items:center;gap:8px}
+.form-section-title i{font-size:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-grid .full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column}
+.form-label{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:6px}
+.form-label small{font-weight:400;color:var(--g500);font-size:11px}
+.form-input,.form-select{padding:10px 12px;border:1px solid var(--g300);border-radius:6px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:var(--w);color:var(--g900)}
+.form-input:focus,.form-select:focus{border-color:var(--fg)}
+.form-input.error,.form-select.error{border-color:var(--red)}
+.form-error{font-size:11px;color:var(--red);margin-top:4px;display:none}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:16px 24px;border-top:1px solid var(--g200)}
+
+/* DRAWER */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1500}
+.drawer-overlay.open{display:block}
+.drawer{position:fixed;top:0;right:-600px;bottom:0;width:600px;max-width:100vw;background:var(--w);z-index:1501;box-shadow:-4px 0 24px rgba(0,0,0,.15);transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.drawer.open{right:0}
+.drawer-header{padding:20px 24px;border-bottom:1px solid var(--g200);display:flex;justify-content:space-between;align-items:flex-start}
+.drawer-info{display:flex;flex-direction:column;gap:8px}
+.drawer-top{display:flex;align-items:center;gap:10px}
+.drawer-name{font-size:18px;font-weight:700}
+.drawer-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.drawer-quick-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.drawer-quick-actions .btn{font-size:12px;padding:6px 12px}
+.drawer-tabs{display:flex;border-bottom:2px solid var(--g200);padding:0 24px;flex-shrink:0;overflow-x:auto}
+.dtab{padding:12px 14px;border:none;background:none;font-size:13px;font-weight:600;color:var(--g500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.dtab:hover{color:var(--fg)}
+.dtab.active{color:var(--fg);border-bottom-color:var(--fg)}
+.drawer-body{flex:1;overflow-y:auto;padding:24px}
+.dtab-content{display:none}
+.dtab-content.active{display:block}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.detail-item{padding:12px;background:var(--g50);border-radius:6px}
+.detail-label{font-size:12px;color:var(--g500);margin-bottom:4px}
+.detail-value{font-size:15px;font-weight:600;color:var(--g900)}
+.detail-value.highlight{color:var(--fg);font-size:18px}
+.detail-value.red{color:var(--red)}
+.detail-full{grid-column:1/-1}
+.mini-table{width:100%;border-collapse:collapse;margin-top:12px}
+.mini-table th{font-size:11px;padding:8px 10px;background:var(--g100)}
+.mini-table td{font-size:13px;padding:8px 10px}
+
+/* STATEMENT */
+.statement-table{width:100%;border-collapse:collapse}
+.statement-table th{font-size:11px;padding:8px 10px;background:var(--g100);text-align:left}
+.statement-table td{font-size:13px;padding:8px 10px}
+.statement-table .debit{text-align:right;color:var(--red)}
+.statement-table .credit{text-align:right;color:var(--fg)}
+.statement-table .balance{text-align:right;font-weight:700}
+.statement-total td{background:var(--fl);font-weight:700}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--g300)}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-item:last-child{margin-bottom:0}
+.tl-dot{position:absolute;left:-21px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--fg);border:2px solid var(--w);box-shadow:0 0 0 2px var(--fg)}
+.tl-date{font-size:12px;font-weight:600;color:var(--g500);margin-bottom:4px}
+.tl-text{font-size:14px;color:var(--g700)}
+.tl-text::before{content:'✓ ';color:var(--fg);font-weight:700}
+.empty-state{text-align:center;padding:24px;color:var(--g500);font-size:13px}
+.empty-state i{display:block;font-size:32px;opacity:.3;margin-bottom:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;color:var(--w);z-index:9999;transition:transform .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast-success{background:var(--fg)}
+.toast-error{background:var(--red)}
+
+@media(max-width:1024px){.summary-grid{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{width:var(--swe);left:calc(-1*var(--swe))}.sidebar.open{left:0}.sidebar:hover{width:var(--swe)}.sidebar .nav-item span,.sidebar:hover .nav-item span{opacity:1}.sidebar .sidebar-logo span,.sidebar:hover .sidebar-logo span{opacity:1}.main-wrapper{margin-left:0}.mobile-toggle{display:block}.content{padding:16px}.search-input{width:100%}.filter-bar{flex-direction:column;align-items:stretch}.filter-pills{overflow-x:auto}.modal{max-width:100vw;max-height:100vh;border-radius:0}.drawer{width:100vw}.drawer-quick-actions{flex-direction:column}}
+@media(max-width:480px){.summary-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-logo"><i class="fas fa-hard-hat"></i><span>THULIR FZE</span></div>
+<nav class="sidebar-nav">
+<a class="nav-item" href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+<a class="nav-item" href="projects.html"><i class="fas fa-building"></i><span>Projects</span></a>
+<a class="nav-item active" href="clients.html"><i class="fas fa-users"></i><span>Clients</span></a>
+<a class="nav-item" href="vendors.html"><i class="fas fa-truck"></i><span>Vendors</span></a>
+<a class="nav-item" href="quotations.html"><i class="fas fa-file-alt"></i><span>Quotations</span></a>
+<a class="nav-item" href="invoices.html"><i class="fas fa-file-invoice-dollar"></i><span>Invoices</span></a>
+<a class="nav-item" href="payments.html"><i class="fas fa-money-check-alt"></i><span>Payments</span></a>
+<a class="nav-item" href="receipts.html"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+<a class="nav-item" href="expenses.html"><i class="fas fa-credit-card"></i><span>Expenses</span></a>
+<a class="nav-item" href="reports.html"><i class="fas fa-chart-pie"></i><span>Reports</span></a>
+<a class="nav-item" href="documents.html"><i class="fas fa-folder-open"></i><span>Documents</span></a>
+<a class="nav-item" href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+</nav>
+</aside>
+
+<div class="main-wrapper">
+<header class="header">
+<div class="header-left">
+<button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+<div class="header-title"><h1>Clients</h1><p>Thulir Design & QS Services FZE</p></div>
+</div>
+<div class="header-right"><div class="profile-icon">TD</div></div>
+</header>
+
+<main class="content">
+<div class="page-header">
+<div><h2>Client Management</h2></div>
+<button class="btn btn-primary" id="addClientBtn"><i class="fas fa-plus"></i> Add Client</button>
+</div>
+
+<div class="summary-grid" id="summaryCards"></div>
+
+<div class="filter-bar">
+<div style="position:relative"><input type="text" class="search-input" id="searchInput" placeholder="Search clients..."></div>
+<div class="filter-pills" id="filterPills">
+<button class="filter-pill active" data-filter="All">All</button>
+<button class="filter-pill" data-filter="Active">Active</button>
+<button class="filter-pill" data-filter="Inactive">Inactive</button>
+<button class="filter-pill" data-filter="Blacklisted">Blacklisted</button>
+</div>
+</div>
+
+<div class="table-card">
+<div class="table-container">
+<table>
+<thead><tr>
+<th style="width:36px"></th>
+<th>Code</th>
+<th>Company Name</th>
+<th>Contact Person</th>
+<th>Email</th>
+<th>Phone</th>
+<th>Projects</th>
+<th>Status</th>
+<th style="width:80px">Action</th>
+</tr></thead>
+<tbody id="clientTableBody"></tbody>
+</table>
+</div>
+<div class="no-results" id="noResults" style="display:none"><i class="fas fa-search"></i><p>No clients found</p></div>
+</div>
+</main>
+</div>
+
+<!-- ADD CLIENT MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal">
+<div class="modal-header"><h2>Add New Client</h2><button class="modal-close" id="modalClose">&times;</button></div>
+<div class="modal-body">
+<div class="form-section">
+<div class="form-section-title"><i class="fas fa-building"></i> Client Information</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Client Code <small>Max 3 chars</small></label><input type="text" class="form-input" id="fCode" maxlength="3" placeholder="e.g. ALG" style="text-transform:uppercase"><div class="form-error" id="errCode">Max 3 characters allowed</div></div>
+<div class="form-group"><label class="form-label">Company Name</label><input type="text" class="form-input" id="fCompany" placeholder="Enter company name"><div class="form-error" id="errCompany">Company name is required</div></div>
+<div class="form-group"><label class="form-label">Company Type</label><select class="form-select" id="fType"><option value="">Select Type</option><option>Main Contractor</option><option>Consultant</option><option>Developer</option><option>Sub Contractor</option><option>Other</option></select><div class="form-error" id="errType">Select company type</div></div>
+<div class="form-group full"><label class="form-label">Address</label><input type="text" class="form-input" id="fAddress" placeholder="Street address"></div>
+<div class="form-group"><label class="form-label">Country</label><select class="form-select" id="fCountry"><option>UAE</option><option>India</option><option>Saudi Arabia</option><option>Oman</option><option>Bahrain</option><option>Qatar</option><option>Other</option></select></div>
+<div class="form-group"><label class="form-label">City</label><input type="text" class="form-input" id="fCity" placeholder="Enter city"></div>
+</div>
+</div>
+<div class="form-section">
+<div class="form-section-title"><i class="fas fa-user-tie"></i> Contact Details</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Contact Person</label><input type="text" class="form-input" id="fContact" placeholder="Full name"></div>
+<div class="form-group"><label class="form-label">Designation</label><input type="text" class="form-input" id="fDesignation" placeholder="Job title"></div>
+<div class="form-group"><label class="form-label">Mobile Number</label><input type="tel" class="form-input" id="fMobile" placeholder="+971 XX XXX XXXX"></div>
+<div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="fEmail" placeholder="email@company.com"></div>
+<div class="form-group full"><label class="form-label">Website</label><input type="url" class="form-input" id="fWebsite" placeholder="https://www.company.com"></div>
+</div>
+</div>
+<div class="form-section">
+<div class="form-section-title"><i class="fas fa-coins"></i> Commercial Details</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Payment Terms</label><select class="form-select" id="fTerms"><option>30 Days</option><option>45 Days</option><option>60 Days</option><option>90 Days</option><option>Custom</option></select></div>
+<div class="form-group"><label class="form-label">Credit Limit (AED)</label><input type="number" class="form-input" id="fCredit" min="0" value="0"></div>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+<button class="btn btn-primary" id="saveBtn"><i class="fas fa-check"></i> Save Client</button>
+</div>
+</div>
+</div>
+
+<!-- CLIENT DETAIL DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+<div class="drawer-header">
+<div class="drawer-info">
+<div class="drawer-top"><span class="code-badge" id="dCode"></span><span class="drawer-name" id="dName"></span></div>
+<div class="drawer-meta"><span class="status-pill" id="dStatus"></span></div>
+<div class="drawer-quick-actions">
+<button class="btn btn-outline btn-sm" onclick="showToast('Navigate to Projects')"><i class="fas fa-building"></i> New Project</button>
+<button class="btn btn-outline btn-sm" onclick="showToast('Navigate to Quotations')"><i class="fas fa-file-alt"></i> New Quote</button>
+<button class="btn btn-outline btn-sm" onclick="showToast('Navigate to Invoices')"><i class="fas fa-file-invoice-dollar"></i> New Invoice</button>
+<button class="btn btn-primary btn-sm" onclick="showToast('Navigate to Payments')"><i class="fas fa-hand-holding-usd"></i> Receive Payment</button>
+</div>
+</div>
+<button class="modal-close" id="drawerClose">&times;</button>
+</div>
+<div class="drawer-tabs">
+<button class="dtab active" data-dtab="overview">Overview</button>
+<button class="dtab" data-dtab="projects">Projects</button>
+<button class="dtab" data-dtab="quotations">Quotations</button>
+<button class="dtab" data-dtab="invoices">Invoices</button>
+<button class="dtab" data-dtab="receipts">Receipts</button>
+<button class="dtab" data-dtab="outstanding">Outstanding</button>
+<button class="dtab" data-dtab="activities">Activities</button>
+</div>
+<div class="drawer-body">
+<div class="dtab-content active" id="dtab-overview"></div>
+<div class="dtab-content" id="dtab-projects"></div>
+<div class="dtab-content" id="dtab-quotations"></div>
+<div class="dtab-content" id="dtab-invoices"></div>
+<div class="dtab-content" id="dtab-receipts"></div>
+<div class="dtab-content" id="dtab-outstanding"></div>
+<div class="dtab-content" id="dtab-activities"></div>
+</div>
+</div>
+
+<script>
+// ── SAMPLE DATA ──
+const SAMPLE_PROJECTS = [
+{id:"PRJ-001",name:"Dubai Villa Rebar Work",type:"Rebar Detailing",contractValue:52500,status:"In Progress"},
+{id:"PRJ-002",name:"Marina Tower Structural",type:"Structural Design",contractValue:126000,status:"Completed"},
+{id:"PRJ-003",name:"Al Mamzar Villa QS",type:"QS / BOQ",contractValue:36750,status:"In Progress"},
+{id:"PRJ-004",name:"JBR Apartment Architecture",type:"Architecture",contractValue:89250,status:"Not Yet Started"},
+{id:"PRJ-005",name:"Palm Jumeirah Estimation",type:"Estimation",contractValue:26250,status:"In Progress"},
+{id:"PRJ-006",name:"Downtown Tower Rebar",type:"Rebar Detailing",contractValue:78750,status:"In Progress"},
+{id:"PRJ-007",name:"SZR Structural",type:"Structural Design",contractValue:99750,status:"Cancelled"},
+{id:"PRJ-008",name:"Naboodah Complex BOQ",type:"QS / BOQ",contractValue:44100,status:"Completed"},
+{id:"PRJ-009",name:"Business Bay Tower Design",type:"Structural Design",contractValue:115500,status:"In Progress"},
+{id:"PRJ-010",name:"Deira Villa Rebar",type:"Rebar Detailing",contractValue:42000,status:"Completed"}
+];
+
+const DEFAULT_CLIENTS = [
+{id:"CLT-001",code:"ABC",company:"ABC Construction LLC",type:"Main Contractor",address:"Office 405, Al Moosa Tower, Sheikh Zayed Road",country:"UAE",city:"Dubai",contact:"Mohammed Al Rashid",designation:"Project Manager",mobile:"+971 50 123 4567",email:"mohammed@abcconstruction.ae",website:"www.abcconstruction.ae",terms:"60 Days",creditLimit:200000,status:"Active",projectIds:["PRJ-001","PRJ-006"],totalContract:131250,totalInvoiced:85000,totalReceived:62000,statement:[{date:"01-Jul-2026",desc:"Invoice INV-003",debit:15000,credit:0,balance:15000},{date:"15-Jul-2026",desc:"Payment Received",debit:0,credit:12000,balance:3000},{date:"20-Jul-2026",desc:"Invoice INV-007",debit:25000,credit:0,balance:28000},{date:"25-Jul-2026",desc:"Payment Received",debit:0,credit:20000,balance:8000}],activities:[{date:"29-Jul-2026",text:"Payment received AED 20,000"},{date:"25-Jul-2026",text:"Invoice INV-007 created for Downtown Tower"},{date:"20-Jul-2026",text:"New project added: Downtown Tower Rebar"},{date:"15-Jul-2026",text:"Payment received AED 12,000"}]},
+{id:"CLT-002",code:"XYZ",company:"XYZ Builders FZCO",type:"Main Contractor",address:"P.O. Box 12345, JAFZA",country:"UAE",city:"Dubai",contact:"Ahmed Khan",designation:"Director",mobile:"+971 55 234 5678",email:"ahmed@xyzbuilders.com",website:"www.xyzbuilders.com",terms:"30 Days",creditLimit:300000,status:"Active",projectIds:["PRJ-002"],totalContract:126000,totalInvoiced:126000,totalReceived:126000,statement:[{date:"01-Feb-2025",desc:"Invoice INV-001",debit:42000,credit:0,balance:42000},{date:"15-Mar-2025",desc:"Payment Received",debit:0,credit:42000,balance:0},{date:"01-May-2025",desc:"Invoice INV-002",debit:42000,credit:0,balance:42000},{date:"15-Jun-2025",desc:"Payment Received",debit:0,credit:42000,balance:0},{date:"28-Jun-2025",desc:"Invoice INV-004",debit:42000,credit:0,balance:42000},{date:"30-Jun-2025",desc:"Payment Received",debit:0,credit:42000,balance:0}],activities:[{date:"30-Jun-2025",text:"Full payment received — Project completed"},{date:"28-Jun-2025",text:"Final invoice INV-004 created"},{date:"15-Jun-2025",text:"Project marked as Completed"}]},
+{id:"CLT-003",code:"DLT",company:"Delta Group Contracting",type:"Sub Contractor",address:"Industrial Area 3, Sharjah",country:"UAE",city:"Sharjah",contact:"Rajesh Menon",designation:"Operations Manager",mobile:"+971 56 345 6789",email:"rajesh@deltagroup.ae",website:"",terms:"45 Days",creditLimit:100000,status:"Active",projectIds:["PRJ-003"],totalContract:36750,totalInvoiced:15000,totalReceived:10000,statement:[{date:"10-Jul-2026",desc:"Invoice INV-005",debit:15000,credit:0,balance:15000},{date:"20-Jul-2026",desc:"Payment Received",debit:0,credit:10000,balance:5000}],activities:[{date:"20-Jul-2026",text:"Payment received AED 10,000"},{date:"10-Jul-2026",text:"Invoice INV-005 created"},{date:"01-Jun-2025",text:"Project started"}]},
+{id:"CLT-004",code:"SKH",company:"SkyHigh LLC",type:"Developer",address:"DIFC, Gate Village 5",country:"UAE",city:"Dubai",contact:"Sarah Johnson",designation:"Project Director",mobile:"+971 50 456 7890",email:"sarah@skyhighllc.com",website:"www.skyhighllc.com",terms:"60 Days",creditLimit:500000,status:"Active",projectIds:["PRJ-004"],totalContract:89250,totalInvoiced:0,totalReceived:0,statement:[],activities:[{date:"15-Jul-2026",text:"Contract signed"},{date:"10-Jul-2026",text:"Client added to system"}]},
+{id:"CLT-005",code:"CST",company:"Coastline Constructions",type:"Main Contractor",address:"P.O. Box 67890, Ajman",country:"UAE",city:"Ajman",contact:"Fahad Al Nuaimi",designation:"Managing Partner",mobile:"+971 54 567 8901",email:"fahad@coastline.ae",website:"www.coastline.ae",terms:"90 Days",creditLimit:150000,status:"Active",projectIds:["PRJ-005"],totalContract:26250,totalInvoiced:5000,totalReceived:0,statement:[{date:"28-Jul-2026",desc:"Invoice INV-008",debit:5000,credit:0,balance:5000}],activities:[{date:"28-Jul-2026",text:"Invoice INV-008 created"},{date:"10-Jul-2026",text:"Project started"}]},
+{id:"CLT-006",code:"GLF",company:"Gulf Engineering Consultants",type:"Consultant",address:"Al Khalidiya, Abu Dhabi",country:"UAE",city:"Abu Dhabi",contact:"Omar Hassan",designation:"Senior Engineer",mobile:"+971 52 678 9012",email:"omar@gulfeng.com",website:"www.gulfeng.com",terms:"30 Days",creditLimit:250000,status:"Active",projectIds:["PRJ-009"],totalContract:115500,totalInvoiced:38000,totalReceived:15000,statement:[{date:"05-Jul-2026",desc:"Invoice INV-009",debit:20000,credit:0,balance:20000},{date:"10-Jul-2026",desc:"Invoice INV-010",debit:18000,credit:0,balance:38000},{date:"15-Jul-2026",desc:"Payment Received",debit:0,credit:15000,balance:23000}],activities:[{date:"15-Jul-2026",text:"Payment received AED 15,000"},{date:"10-Jul-2026",text:"Invoice INV-010 created"},{date:"05-Jul-2026",text:"Invoice INV-009 created"},{date:"01-Jun-2026",text:"New project added: Business Bay Tower"}]},
+{id:"CLT-007",code:"EMS",company:"Emirates Structural Co.",type:"Main Contractor",address:"Al Quoz Industrial 4",country:"UAE",city:"Dubai",contact:"Khalid Ibrahim",designation:"GM",mobile:"+971 55 789 0123",email:"khalid@emiratesstruct.ae",website:"",terms:"45 Days",creditLimit:0,status:"Blacklisted",projectIds:["PRJ-007"],totalContract:99750,totalInvoiced:15000,totalReceived:5000,statement:[{date:"15-Mar-2025",desc:"Invoice INV-006",debit:15000,credit:0,balance:15000},{date:"15-Jun-2025",desc:"Partial Payment",debit:0,credit:5000,balance:10000}],activities:[{date:"01-Jul-2025",text:"Client blacklisted — payment issues"},{date:"15-Jun-2025",text:"Partial payment received AED 5,000"},{date:"01-Mar-2025",text:"Project started"}]},
+{id:"CLT-008",code:"NBD",company:"Al Naboodah Contracting LLC",type:"Main Contractor",address:"P.O. Box 11111, Al Quoz",country:"UAE",city:"Dubai",contact:"Hamid Al Naboodah",designation:"CEO",mobile:"+971 50 890 1234",email:"hamid@alnaboodah.ae",website:"www.alnaboodah.com",terms:"30 Days",creditLimit:400000,status:"Active",projectIds:["PRJ-008","PRJ-010"],totalContract:86100,totalInvoiced:86100,totalReceived:86100,statement:[{date:"01-Mar-2025",desc:"Invoice INV-011",debit:44100,credit:0,balance:44100},{date:"10-May-2025",text:"Payment Received",debit:0,credit:44100,balance:0},{date:"01-Jun-2025",desc:"Invoice INV-012",debit:42000,credit:0,balance:42000},{date:"30-Jun-2025",desc:"Payment Received",debit:0,credit:42000,balance:0}],activities:[{date:"30-Jun-2025",text:"Full payment received for Deira Villa"},{date:"15-May-2025",text:"Full payment received for Naboodah Complex"},{date:"01-Feb-2025",text:"Project started: Naboodah Complex BOQ"}]}
+];
+
+// ── STATE ──
+let clients = loadClients();
+let currentFilter = "All";
+let searchQuery = "";
+let expandedRows = new Set();
+
+function loadClients(){try{const d=localStorage.getItem('tdqs_clients');return d?JSON.parse(d):JSON.parse(JSON.stringify(DEFAULT_CLIENTS))}catch{return JSON.parse(JSON.stringify(DEFAULT_CLIENTS))}}
+function saveClients(){localStorage.setItem('tdqs_clients',JSON.stringify(clients))}
+function fmt(n){return "AED "+Number(n||0).toLocaleString()}
+function statusClass(s){return{Active:'sp-active',Inactive:'sp-inactive',Blacklisted:'sp-blacklisted'}[s]||'sp-inactive'}
+function nextId(){const nums=clients.map(c=>parseInt(c.id.split('-')[1])||0);return "CLT-"+String(Math.max(0,...nums)+1).padStart(3,'0')}
+function getProject(id){return SAMPLE_PROJECTS.find(p=>p.id===id)||{name:'—',type:'—',contractValue:0,status:'—'}}
+
+// ── SUMMARY ──
+function renderSummary(){
+const total=clients.length;
+const active=clients.filter(c=>c.status==='Active').length;
+const contract=clients.reduce((a,c)=>a+c.totalContract,0);
+const outstanding=clients.reduce((a,c)=>a+(c.totalInvoiced-c.totalReceived),0);
+const filterMap={All:'sc-total',Active:'sc-active',Inactive:'sc-total',Blacklisted:'sc-outstanding'};
+document.getElementById('summaryCards').innerHTML=`
+<div class="summary-card ${currentFilter==='All'?'active-filter':''}" onclick="applyFilter('All')"><div class="sc-title">Total Clients</div><div class="sc-value">${total}</div></div>
+<div class="summary-card ${currentFilter==='Active'?'active-filter':''}" onclick="applyFilter('Active')"><div class="sc-title">Active Clients</div><div class="sc-value">${active}</div></div>
+<div class="summary-card"><div class="sc-title">Total Contract Value</div><div class="sc-value">${fmt(contract)}</div><div class="sc-sub">Across all clients</div></div>
+<div class="summary-card ${currentFilter==='Blacklisted'?'active-filter':''}" onclick="applyFilter('Blacklisted')"><div class="sc-title">Outstanding Receivable</div><div class="sc-value">${fmt(outstanding)}</div><div class="sc-sub">${clients.filter(c=>(c.totalInvoiced-c.totalReceived)>0).length} clients with dues</div></div>`;
+}
+function applyFilter(f){currentFilter=f;document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p.dataset.filter===f));renderSummary();renderTable()}
+
+// ── TABLE ──
+function getFiltered(){
+return clients.filter(c=>{
+const mf=currentFilter==='All'||c.status===currentFilter;
+const q=searchQuery.toLowerCase();
+const ms=!q||c.code.toLowerCase().includes(q)||c.company.toLowerCase().includes(q)||c.contact.toLowerCase().includes(q)||c.email.toLowerCase().includes(q);
+return mf&&ms});
+}
+
+function renderTable(){
+const filtered=getFiltered();
+const tbody=document.getElementById('clientTableBody');
+const noRes=document.getElementById('noResults');
+if(!filtered.length){tbody.innerHTML='';noRes.style.display='block';return}
+noRes.style.display='none';
+tbody.innerHTML=filtered.map(c=>{
+const isExp=expandedRows.has(c.id);
+const out=c.totalInvoiced-c.totalReceived;
+return `<tr>
+<td><button class="action-btn ${isExp?'expanded':''}" onclick="toggleExpand('${c.id}')"><i class="fas fa-chevron-right"></i></button></td>
+<td><span class="code-badge">${c.code}</span></td>
+<td style="font-weight:600;min-width:200px">${c.company}</td>
+<td style="color:var(--g700)">${c.contact||'—'}</td>
+<td style="color:var(--g500);font-size:13px">${c.email||'—'}</td>
+<td style="color:var(--g700)">${c.mobile||'—'}</td>
+<td style="text-align:center">${c.projectIds.length}</td>
+<td><span class="status-pill ${statusClass(c.status)}">${c.status}</span></td>
+<td><div class="action-btns"><button class="action-btn" title="View Details" onclick="openDrawer('${c.id}')"><i class="fas fa-eye"></i></button></div></td>
+</tr>
+<tr class="expanded-row" style="display:${isExp?'table-row':'none'}" id="exp-${c.id}"><td colspan="9"><div class="fin-strip">
+<div class="fin-item"><span class="fin-label">Contract Value</span><span class="fin-val blue">${fmt(c.totalContract)}</span></div>
+<div class="fin-item"><span class="fin-label">Total Invoiced</span><span class="fin-val dark">${fmt(c.totalInvoiced)}</span></div>
+<div class="fin-item"><span class="fin-label">Total Received</span><span class="fin-val green">${fmt(c.totalReceived)}</span></div>
+<div class="fin-item"><span class="fin-label">Outstanding</span><span class="fin-val ${out>0?'red':'green'}">${fmt(out)}</span></div>
+<div class="fin-item"><span class="fin-label">Credit Limit</span><span class="fin-val dark">${fmt(c.creditLimit)}</span></div>
+<div class="fin-item"><span class="fin-label">Payment Terms</span><span class="fin-val dark">${c.terms}</span></div>
+</div></td></tr>`}).join('');
+}
+
+function toggleExpand(id){expandedRows.has(id)?expandedRows.delete(id):expandedRows.add(id);renderTable()}
+
+// ── DRAWER ──
+function openDrawer(id){
+const c=clients.find(x=>x.id===id);if(!c)return;
+document.getElementById('dCode').textContent=c.code;
+document.getElementById('dName').textContent=c.company;
+const ds=document.getElementById('dStatus');ds.textContent=c.status;ds.className='status-pill '+statusClass(c.status);
+
+const out=c.totalInvoiced-c.totalReceived;
+document.getElementById('dtab-overview').innerHTML=`<div class="detail-grid">
+<div class="detail-item"><div class="detail-label">Company Type</div><div class="detail-value">${c.type}</div></div>
+<div class="detail-item"><div class="detail-label">Contact Person</div><div class="detail-value">${c.contact||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Designation</div><div class="detail-value">${c.designation||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Mobile</div><div class="detail-value">${c.mobile||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Email</div><div class="detail-value" style="font-size:13px;word-break:break-all">${c.email||'—'}</div></div>
+<div class="detail-item"><div class="detail-label">Website</div><div class="detail-value" style="font-size:13px">${c.website||'—'}</div></div>
+<div class="detail-item detail-full"><div class="detail-label">Address</div><div class="detail-value">${c.address||'—'}, ${c.city||''}, ${c.country||''}</div></div>
+<div class="detail-item"><div class="detail-label">Payment Terms</div><div class="detail-value">${c.terms}</div></div>
+<div class="detail-item"><div class="detail-label">Credit Limit</div><div class="detail-value">${fmt(c.creditLimit)}</div></div>
+<div class="detail-item"><div class="detail-label">Total Contract Value</div><div class="detail-value highlight">${fmt(c.totalContract)}</div></div>
+<div class="detail-item"><div class="detail-label">Total Invoiced</div><div class="detail-value">${fmt(c.totalInvoiced)}</div></div>
+<div class="detail-item"><div class="detail-label">Outstanding</div><div class="detail-value ${out>0?'red':''}">${fmt(out)}</div></div>
+</div>`;
+
+// Projects tab
+const projs=c.projectIds.map(pid=>getProject(pid));
+document.getElementById('dtab-projects').innerHTML=projs.length?`<table class="mini-table"><thead><tr><th>Project Name</th><th>Type</th><th style="text-align:right">Contract Value</th><th>Status</th></tr></thead><tbody>${projs.map(p=>`<tr><td style="font-weight:500">${p.name}</td><td><span class="type-tag">${p.type}</span></td><td style="text-align:right;font-weight:600">${fmt(p.contractValue)}</td><td><span class="status-pill ${p.status==='Completed'?'sp-completed':p.status==='In Progress'?'sp-active':'sp-inactive'}">${p.status}</span></td></tr>`).join('')}</tbody></table>`:'<div class="empty-state"><i class="fas fa-building"></i>No linked projects</div>';
+
+// Quotations tab
+document.getElementById('dtab-quotations').innerHTML=`<div class="empty-state"><i class="fas fa-file-alt"></i>Quotations will be linked from Quotations module</div>`;
+
+// Invoices tab
+document.getElementById('dtab-invoices').innerHTML=c.statement.filter(s=>s.debit>0).length?`<table class="mini-table"><thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead><tbody>${c.statement.filter(s=>s.debit>0).map(s=>`<tr><td>${s.date}</td><td>${s.desc}</td><td style="text-align:right;font-weight:600;color:var(--red)">${fmt(s.debit)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty-state"><i class="fas fa-file-invoice-dollar"></i>No invoices</div>';
+
+// Receipts tab
+document.getElementById('dtab-receipts').innerHTML=c.statement.filter(s=>s.credit>0).length?`<table class="mini-table"><thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead><tbody>${c.statement.filter(s=>s.credit>0).map(s=>`<tr><td>${s.date}</td><td>${s.desc}</td><td style="text-align:right;font-weight:600;color:var(--fg)">${fmt(s.credit)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty-state"><i class="fas fa-receipt"></i>No receipts</div>';
+
+// Outstanding tab (Statement)
+document.getElementById('dtab-outstanding').innerHTML=c.statement.length?`<table class="statement-table"><thead><tr><th>Date</th><th>Description</th><th class="debit">Debit</th><th class="credit">Credit</th><th class="balance">Balance</th></tr></thead><tbody>${c.statement.map(s=>`<tr><td>${s.date}</td><td>${s.desc}</td><td class="debit">${s.debit?fmt(s.debit):''}</td><td class="credit">${s.credit?fmt(s.credit):''}</td><td class="balance">${fmt(s.balance)}</td></tr>`).join('')}<tr class="statement-total"><td colspan="4" style="text-align:right">Closing Balance</td><td class="balance">${fmt(c.statement[c.statement.length-1].balance)}</td></tr></tbody></table>`:'<div class="empty-state"><i class="fas fa-file-invoice"></i>No transactions yet</div>';
+
+// Activities tab
+document.getElementById('dtab-activities').innerHTML=c.activities.length?`<div class="timeline">${c.activities.map(a=>`<div class="tl-item"><div class="tl-dot"></div><div class="tl-date">${a.date}</div><div class="tl-text">${a.text}</div></div>`).join('')}</div>`:'<div class="empty-state"><i class="fas fa-clock"></i>No activities yet</div>';
+
+document.querySelectorAll('.dtab').forEach(t=>t.classList.toggle('active',t.dataset.dtab==='overview'));
+document.querySelectorAll('.dtab-content').forEach(c2=>c2.classList.toggle('active',c2.id==='dtab-overview'));
+document.getElementById('drawer').classList.add('open');
+document.getElementById('drawerOverlay').classList.add('open');
+}
+
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawerOverlay').classList.remove('open')}
+
+// ── MODAL ──
+function openModal(){
+['fCode','fCompany','fAddress','fCity','fContact','fDesignation','fMobile','fEmail','fWebsite'].forEach(id=>document.getElementById(id).value='');
+['fType','fCountry','fTerms'].forEach(id=>document.getElementById(id).selectedIndex=0);
+document.getElementById('fCredit').value='0';
+document.querySelectorAll('.form-error').forEach(e=>e.style.display='none');
+document.querySelectorAll('.form-input.error,.form-select.error').forEach(e=>e.classList.remove('error'));
+document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open')}
+
+function submitClient(){
+let valid=true;
+const code=document.getElementById('fCode').value.trim().toUpperCase();
+const company=document.getElementById('fCompany').value.trim();
+const type=document.getElementById('fType').value;
+if(code.length>3||!code){document.getElementById('errCode').style.display='block';document.getElementById('fCode').classList.add('error');valid=false}else{document.getElementById('errCode').style.display='none';document.getElementById('fCode').classList.remove('error')}
+if(!company){document.getElementById('errCompany').style.display='block';document.getElementById('fCompany').classList.add('error');valid=false}else{document.getElementById('errCompany').style.display='none';document.getElementById('fCompany').classList.remove('error')}
+if(!type){document.getElementById('errType').style.display='block';document.getElementById('fType').classList.add('error');valid=false}else{document.getElementById('errType').style.display='none';document.getElementById('fType').classList.remove('error')}
+if(!valid)return;
+
+const c={id:nextId(),code,company,type,address:document.getElementById('fAddress').value.trim(),country:document.getElementById('fCountry').value,city:document.getElementById('fCity').value.trim(),contact:document.getElementById('fContact').value.trim(),designation:document.getElementById('fDesignation').value.trim(),mobile:document.getElementById('fMobile').value.trim(),email:document.getElementById('fEmail').value.trim(),website:document.getElementById('fWebsite').value.trim(),terms:document.getElementById('fTerms').value,creditLimit:Number(document.getElementById('fCredit').value)||0,status:"Active",projectIds:[],totalContract:0,totalInvoiced:0,totalReceived:0,statement:[],activities:[{date:new Date().toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'}),text:'Client created'}]};
+clients.unshift(c);saveClients();closeModal();renderSummary();renderTable();
+showToast('Client '+c.code+' — '+c.company+' added successfully');
+}
+
+// ── EVENTS ──
+document.getElementById('addClientBtn').addEventListener('click',openModal);
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('cancelBtn').addEventListener('click',closeModal);
+document.getElementById('saveBtn').addEventListener('click',submitClient);
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+document.getElementById('drawerClose').addEventListener('click',closeDrawer);
+document.getElementById('drawerOverlay').addEventListener('click',closeDrawer);
+document.getElementById('searchInput').addEventListener('input',e=>{searchQuery=e.target.value;renderTable()});
+document.querySelectorAll('.filter-pill').forEach(pill=>{pill.addEventListener('click',()=>{currentFilter=pill.dataset.filter;document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p===pill));renderSummary();renderTable()})});
+document.querySelectorAll('.dtab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.dtab-content').forEach(c=>c.classList.remove('active'));tab.classList.add('active');document.getElementById('dtab-'+tab.dataset.dtab).classList.add('active')})});
+
+// Sidebar
+const sidebar=document.getElementById('sidebar'),mobileToggle=document.getElementById('mobileToggle'),overlay=document.getElementById('sidebarOverlay');
+mobileToggle.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('active')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('active')});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',e=>{document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));e.currentTarget.classList.add('active');if(window.innerWidth<=768){sidebar.classList.remove('open');overlay.classList.remove('active')}})});
+
+// Toast
+function showToast(msg,type='success'){const t=document.createElement('div');t.className='toast toast-'+type;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.classList.add('show'),10);setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3000)}
+
+// Init
+renderSummary();
+renderTable();
+</script>
+</body>
+</html>
