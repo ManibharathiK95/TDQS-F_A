@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDQS - Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--fg:#1B5E20;--fh:#2E7D32;--fl:#E8F5E9;--fm:#4CAF50;--w:#FFF;--bk:#121212;--g50:#FAFAFA;--g100:#F5F5F5;--g200:#EEE;--g300:#E0E0E0;--g500:#757575;--g700:#424242;--g900:#212121;--sw:70px;--swe:240px;--hh:64px;--red:#C62828;--blue:#1565C0;--orange:#F57C00;--purple:#7B1FA2;--teal:#00796B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--g100);color:var(--g900);overflow:hidden;height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sw);background:var(--bk);color:var(--w);z-index:1000;transition:width .3s cubic-bezier(.4,0,.2,1);overflow:hidden;display:flex;flex-direction:column}
+.sidebar:hover{width:var(--swe)}
+.sidebar-logo{height:var(--hh);display:flex;align-items:center;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);gap:12px;white-space:nowrap}
+.sidebar-logo i{font-size:24px;color:var(--fm);min-width:30px;text-align:center}
+.sidebar-logo span{font-family:'Playfair Display',serif;font-size:18px;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .sidebar-logo span{opacity:1}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto;overflow-x:hidden}
+.nav-item{display:flex;align-items:center;padding:12px 20px;color:var(--g300);text-decoration:none;gap:12px;cursor:pointer;transition:all .2s;white-space:nowrap;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.05);color:var(--w)}
+.nav-item.active{background:rgba(27,94,32,.2);color:var(--fm);border-left-color:var(--fm)}
+.nav-item i{font-size:18px;min-width:30px;text-align:center}
+.nav-item span{font-size:14px;font-weight:500;opacity:0;transition:opacity .2s ease .1s}
+.sidebar:hover .nav-item span{opacity:1}
+.main-wrapper{margin-left:var(--sw);height:100vh;display:flex;flex-direction:column;transition:margin-left .3s}
+.header{height:var(--hh);background:var(--w);border-bottom:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:500;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:16px}
+.mobile-toggle{display:none;background:none;border:none;font-size:20px;color:var(--g700);cursor:pointer}
+.header-title h1{font-size:18px;font-weight:700;color:var(--bk)}
+.header-title p{font-size:12px;color:var(--g500)}
+.header-right{display:flex;align-items:center;gap:16px}
+.profile-icon{width:36px;height:36px;border-radius:50%;background:var(--fg);color:var(--w);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;cursor:pointer}
+.content{flex:1;overflow-y:auto;padding:24px;background:var(--g100)}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.page-header h2{font-size:22px;font-weight:700}
+.btn{padding:10px 20px;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s;font-family:inherit}
+.btn-primary{background:var(--fg);color:var(--w)}.btn-primary:hover{background:var(--fh)}
+.btn-secondary{background:var(--g100);color:var(--g700);border:1px solid var(--g300)}.btn-secondary:hover{background:var(--g200)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-outline{background:transparent;color:var(--fg);border:1px solid var(--fg)}.btn-outline:hover{background:var(--fl)}
+.btn-danger{background:var(--red);color:var(--w)}.btn-danger:hover{background:#B71C1C}
+
+/* Settings Tabs */
+.settings-tabs{display:flex;gap:0;border-bottom:2px solid var(--g200);margin-bottom:24px;overflow-x:auto}
+.stab{padding:14px 24px;border:none;background:none;font-size:14px;font-weight:600;color:var(--g500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.stab:hover{color:var(--fg)}.stab.active{color:var(--fg);border-bottom-color:var(--fg)}
+.stab-content{display:none}.stab-content.active{display:block}
+
+/* Card */
+.card{background:var(--w);border-radius:8px;border:1px solid var(--g200);box-shadow:0 1px 3px rgba(0,0,0,.05);padding:24px;margin-bottom:24px}
+.section-title{font-size:16px;font-weight:700;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--fl);display:flex;align-items:center;gap:8px;color:var(--g900)}
+.section-title i{font-size:14px;color:var(--fg)}
+
+/* Form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.form-grid .full{grid-column:1/-1}
+.form-grid .span-3{grid-column:span 1}
+.form-group{display:flex;flex-direction:column}
+.form-label{font-size:13px;font-weight:600;color:var(--g700);margin-bottom:8px}
+.form-label small{font-weight:400;color:var(--g500);font-size:11px}
+.form-input,.form-select,.form-textarea{padding:10px 12px;border:1px solid var(--g300);border-radius:6px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:var(--w);color:var(--g900)}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.6}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--fg);box-shadow:0 0 0 3px rgba(27,94,32,0.1)}
+
+/* Logo Upload */
+.logo-section{display:flex;align-items:center;gap:24px;margin-bottom:24px;padding:24px;background:var(--g50);border-radius:12px;border:2px dashed var(--g300);transition:all .2s}
+.logo-section:hover{border-color:var(--fg);background:var(--fl)}
+.logo-preview{width:120px;height:120px;border-radius:12px;background:var(--w);border:2px solid var(--g200);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.logo-preview img{width:100%;height:100%;object-fit:contain}
+.logo-preview .placeholder{color:var(--g300);font-size:36px}
+.logo-upload-info{flex:1}
+.logo-upload-info h3{font-size:16px;font-weight:600;margin-bottom:4px}
+.logo-upload-info p{font-size:13px;color:var(--g500);line-height:1.5}
+.logo-upload-btn{margin-top:10px;padding:8px 16px;border:1px solid var(--fg);border-radius:6px;background:transparent;color:var(--fg);font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+.logo-upload-btn:hover{background:var(--fg);color:var(--w)}
+
+/* Preview Card */
+.preview-card{background:var(--w);border:1px solid var(--g200);border-radius:12px;overflow:hidden;max-width:420px;margin-top:24px}
+.preview-header{background:var(--bk);padding:20px 24px;display:flex;align-items:center;gap:14px;color:var(--w)}
+.preview-header img{height:44px;width:auto;max-width:44px;object-fit:contain;border-radius:6px}
+.preview-header .ph-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700}
+.preview-header .ph-sub{font-size:12px;opacity:.7}
+.preview-body{padding:16px 24px}
+.preview-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--g100)}
+.preview-row:last-child{border-bottom:none}
+.preview-row .label{color:var(--g500)}
+.preview-row .val{font-weight:600}
+
+/* Toggle */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--g100)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{display:flex;flex-direction:column;gap:2px}
+.toggle-label span:first-child{font-size:14px;font-weight:500;color:var(--g900)}
+.toggle-label span:last-child{font-size:12px;color:var(--g500)}
+.toggle-switch{width:48px;height:26px;border-radius:13px;background:var(--g300);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle-switch.on{background:var(--fg)}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--w);transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle-switch.on::after{transform:translateX(22px)}
+
+/* User Table */
+.user-table{width:100%;border-collapse:collapse;margin-top:16px}
+.user-table th{font-size:11px;padding:10px 14px;text-transform:uppercase;letter-spacing:.5px;background:var(--g50);color:var(--g500);font-weight:600;text-align:left}
+.user-table td{padding:12px 14px;border-bottom:1px solid var(--g200);font-size:14px}
+.user-table tr:hover td{background:var(--g50)}
+.role-badge{padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap;display:inline-block}
+.role-admin{background:#FFEBEE;color:var(--red)}.role-manager{background:#E3F2FD;color:var(--blue)}.role-user{background:var(--fl);color:var(--fh)}.role-viewer{background:var(--g100);color:var(--g500)}
+.action-btn{width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;background:var(--g100);color:var(--g500)}
+.action-btn:hover{background:var(--fl);color:var(--fg)}
+.add-user-btn{margin-top:16px;padding:8px 16px;border:1px dashed var(--g300);border-radius:6px;font-size:13px;color:var(--fg);cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;background:none;transition:all .2s}
+.add-user-btn:hover{background:var(--fl);border-color:var(--fg)}
+
+/* Email Template */
+.template-card{background:var(--g50);border:1px solid var(--g200);border-radius:8px;padding:20px;margin-bottom:16px;cursor:pointer;transition:all .2s}
+.template-card:hover{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.template-card.active{border-color:var(--fg);background:var(--fl)}
+.template-name{font-size:14px;font-weight:600;color:var(--g900);margin-bottom:4px}
+.template-desc{font-size:12px;color:var(--g500)}
+.template-preview{margin-top:12px;padding:12px;background:var(--w);border-radius:6px;font-size:13px;color:var(--g700);line-height:1.6;border:1px solid var(--g200);max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;color:var(--w);z-index:9999;transition:transform .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}.toast-success{background:var(--fg)}.toast-error{background:var(--red)}
+
+@media(max-width:1024px){.form-grid{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{width:var(--swe);left:calc(-1*var(--swe))}.sidebar.open{left:0}.sidebar:hover{width:var(--swe)}.sidebar .nav-item span,.sidebar:hover .nav-item span{opacity:1}.sidebar .sidebar-logo span,.sidebar:hover .sidebar-logo span{opacity:1}.main-wrapper{margin-left:0}.mobile-toggle{display:block}.content{padding:16px}.settings-tabs{overflow-x:auto}.stab{padding:12px 16px;font-size:13px}.logo-section{flex-direction:column;text-align:center}.preview-card{max-width:100%}}
+@media(max-width:480px){.user-table{font-size:12px}.user-table th,.user-table td{padding:8px 10px}}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-logo"><i class="fas fa-hard-hat"></i><span>THULIR FZE</span></div>
+<nav class="sidebar-nav">
+<a class="nav-item" href="index.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+<a class="nav-item" href="projects.html"><i class="fas fa-building"></i><span>Projects</span></a>
+<a class="nav-item" href="clients.html"><i class="fas fa-users"></i><span>Clients</span></a>
+<a class="nav-item" href="vendors.html"><i class="fas fa-truck"></i><span>Vendors</span></a>
+<a class="nav-item" href="quotations.html"><i class="fas fa-file-alt"></i><span>Quotations</span></a>
+<a class="nav-item" href="invoices.html"><i class="fas fa-file-invoice-dollar"></i><span>Invoices</span></a>
+<a class="nav-item" href="payments.html"><i class="fas fa-money-check-alt"></i><span>Payments</span></a>
+<a class="nav-item" href="receipts.html"><i class="fas fa-receipt"></i><span>Receipts</span></a>
+<a class="nav-item" href="expenses.html"><i class="fas fa-credit-card"></i><span>Expenses</span></a>
+<a class="nav-item" href="reports.html"><i class="fas fa-chart-pie"></i><span>Reports</span></a>
+<a class="nav-item" href="documents.html"><i class="fas fa-folder-open"></i><span>Documents</span></a>
+<a class="nav-item active" href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+</nav>
+</aside>
+
+<div class="main-wrapper">
+<header class="header">
+<div class="header-left">
+<button class="mobile-toggle" id="mobileToggle"><i class="fas fa-bars"></i></button>
+<div class="header-title"><h1>Settings</h1><p>Thulir Design & QS Services FZE</p></div>
+</div>
+<div class="header-right"><div class="profile-icon">TD</div></div>
+</header>
+<main class="content">
+<div class="page-header">
+<div><h2>System Configuration</h2></div>
+<button class="btn btn-primary" id="saveAllBtn"><i class="fas fa-save"></i> Save All Changes</button>
+</div>
+
+<div class="settings-tabs">
+<button class="stab active" data-stab="company"><i class="fas fa-building"></i> Company Profile</button>
+<button class="stab" data-stab="invoice"><i class="fas fa-file-invoice-dollar"></i> Invoice Settings</button>
+<button class="stab" data-stab="users"><i class="fas fa-users-cog"></i> User Management</button>
+<button class="stab" data-stab="system"><i class="fas fa-sliders-h"></i> System Settings</button>
+<button class="stab" data-stab="email"><i class="fas fa-envelope"></i> Email Templates</button>
+</div>
+
+<!-- COMPANY PROFILE -->
+<div class="stab-content active" id="stab-company">
+<div class="logo-section">
+<div class="logo-preview" id="logoPreview"><img src="logo.png" alt="Logo" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-hard-hat placeholder\'></i>'"></div>
+<div class="logo-upload-info">
+<h3>Company Logo</h3>
+<p>Upload your company logo. It will appear on invoices, quotations, and all documents. Recommended size: 200x200px, PNG or JPG format.</p>
+<button class="logo-upload-btn" onclick="document.getElementById('logoInput').click()"><i class="fas fa-cloud-upload-alt"></i> Change Logo</button>
+<input type="file" id="logoInput" accept="image/*" style="display:none" onchange="handleLogo(this)">
+</div>
+</div>
+
+<div class="card">
+<div class="section-title"><i class="fas fa-building"></i> Company Information</div>
+<div class="form-grid">
+<div class="form-group full"><label class="form-label">Company Name</label><input type="text" class="form-input" id="sCompanyName" value="Thulir Design & QS Services FZE"></div>
+<div class="form-group"><label class="form-label">Trading Name <small>(Short name for invoices)</small></label><input type="text" class="form-input" id="sTradeName" value="TDQS"></div>
+<div class="form-group"><label class="form-label">Company Type</label><select class="form-select" id="sCompanyType"><option>FZE - Free Zone Establishment</option><option>LLC - Limited Liability Company</option><option>Sole Establishment</option></select></div>
+<div class="form-group"><label class="form-label">License Number</label><input type="text" class="form-input" id="sLicense" value="CN-1234567"></div>
+<div class="form-group full"><label class="form-label">Address</label><textarea class="form-textarea" id="sAddress" rows="2">Business Bay, Dubai, UAE</textarea></div>
+<div class="form-group"><label class="form-label">City</label><input type="text" class="form-input" id="sCity" value="Dubai"></div>
+<div class="form-group"><label class="form-label">Country</label><select class="form-select" id="sCountry"><option selected>UAE</option><option>India</option><option>Saudi Arabia</option><option>Oman</option></select></div>
+<div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="sEmail" value="accounts@thulirfze.com"></div>
+<div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" id="sPhone" value="+971 4 123 4567"></div>
+<div class="form-group"><label class="form-label">Mobile</label><input type="tel" class="form-input" id="sMobile" value="+971 50 123 4567"></div>
+<div class="form-group"><label class="form-label">Website</label><input type="url" class="form-input" id="sWebsite" value="www.thulirfze.com"></div>
+<div class="form-group"><label class="form-label">TRN <small>(Tax Registration Number)</small></label><input type="text" class="form-input" id="sTRN" value="100123456789003"></div>
+</div>
+</div>
+
+<div class="section-title" style="margin-top:8px"><i class="fas fa-eye"></i> Invoice Preview</div>
+<div class="preview-card">
+<div class="preview-header"><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><div><div class="ph-name" id="prevName">Thulir Design & QS Services FZE</div><div class="ph-sub" id="prevSub">Construction Design & Quantity Surveying</div></div></div>
+<div class="preview-body">
+<div class="preview-row"><span class="label">Address</span><span class="val" id="prevAddr">Business Bay, Dubai, UAE</span></div>
+<div class="preview-row"><span class="label">Email</span><span class="val" id="prevEmail">accounts@thulirfze.com</span></div>
+<div class="preview-row"><span class="label">Phone</span><span class="val" id="prevPhone">+971 4 123 4567</span></div>
+<div class="preview-row"><span class="label">TRN</span><span class="val" id="prevTRN">100123456789003</span></div>
+<div class="preview-row"><span class="label">Website</span><span class="val" id="prevWeb">www.thulirfze.com</span></div>
+</div>
+</div>
+</div>
+
+<!-- INVOICE SETTINGS -->
+<div class="stab-content" id="stab-invoice">
+<div class="card">
+<div class="section-title"><i class="fas fa-file-invoice-dollar"></i> Quotation Numbering</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Prefix</label><input type="text" class="form-input" id="qPrefix" value="QT-"></div>
+<div class="form-group"><label class="form-label">Starting Number</label><input type="number" class="form-input" id="qStart" value="11" min="1"></div>
+<div class="form-group"><label class="label">Number Digits</label><select class="form-select" id="qDigits"><option value="3" selected>3 (QT-001)</option><option value="4">4 (QT-0001)</option><option value="5">5 (QT-00001)</option></select></div>
+</div>
+</div>
+<div class="card">
+<div class="section-title"><i class="fas fa-file-invoice-dollar"></i> Invoice Numbering</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Prefix</label><input type="text" class="form-input" id="iPrefix" value="INV-"></div>
+<div class="form-group"><label class="form-label">Starting Number</label><input type="number" class="form-input" id="iStart" value="11" min="1"></div>
+<div class="form-group"><label class="form-label">Number Digits</label><select class="form-select" id="iDigits"><option value="3" selected>3 (INV-001)</option><option value="4">4 (INV-0001)</option><option value="5">5 (INV-00001)</option></select></div>
+</div>
+</div>
+<div class="card">
+<div class="section-title"><i class="fas fa-receipt"></i> Receipt Numbering</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Prefix</label><input type="text" class="form-input" id="rPrefix" value="RCT-"></div>
+<div class="form-group"><label class="form-label">Starting Number</label><input type="number" class="form-input" id="rStart" value="9" min="1"></div>
+</div>
+</div>
+<div class="card">
+<div class="section-title"><i class="fas fa-money-check-alt"></i> Payment Numbering</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Prefix</label><input type="text" class="form-input" id="pPrefix" value="PAY-"></div>
+<div class="form-group"><label class="form-label">Starting Number</label><input type="number" class="form-input" id="pStart" value="12" min="1"></div>
+
+</div>
+</div>
+<div class="card">
+<div class="section-title"><i class="fas fa-percent"></i> VAT Settings</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">VAT Registration</label><select class="form-select" id="sVatStatus"><option value="registered">VAT Registered</option><option value="not-registered">Not Registered</option></select></div>
+<div class="form-group"><label class="form-label">VAT Rate (%)</label><input type="number" class="form-input" id="sVatRate" value="5" min="0" max="100" step="0.25"></div>
+<div class="form-group full"><label class="form-label">VAT Label on Invoice</label><input type="text" class="form-input" id="sVatLabel" value="VAT"></div>
+</div>
+<div class="section-title" style="margin-top:16px"><i class="fas fa-align-left"></i> Invoice Default Notes</div>
+<div class="form-grid .full"><textarea class="form-textarea" id="sInvNotes" rows="3">1. Work will commence after approval.
+2. Payment as per agreed terms.
+3. Additional scope will be charged separately.
+4. This invoice is valid for 30 days from the date of issue.</textarea></div>
+</div>
+</div>
+
+<!-- USER MANAGEMENT -->
+<div class="stab-content" id="stab-users">
+<div class="card">
+<div class="section-title"><i class="fas fa-users-cog"></i> User Roles & Permissions</div>
+<table class="user-table">
+<thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th style="width:60px"></th></tr></thead>
+<tbody id="userTableBody">
+<tr>
+<td style="font-weight:600;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--fg);color:var(--w);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">TD</div>Admin User</td>
+<td style="color:var(--g500)">admin@thulirfze.com</td>
+<td><span class="role-badge role-admin">Admin</span></td>
+<td><span class="role-badge role-admin">Active</span></td>
+<td><button class="action-btn" title="Edit"><i class="fas fa-pen"></i></button></td>
+</tr>
+<tr>
+<td style="font-weight:600;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--blue);color:var(--w);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">AK</div>Ahmed Khan</td>
+<td style="color:var(--g500)">ahmed@thulirfze.com</td>
+<td><span class="role-badge role-manager">Manager</span></td>
+<td><span class="role-badge role-manager">Active</span></td>
+<td><button class="action-btn" title="Edit"><i class="fas fa-pen"></i></button></td>
+</tr>
+<tr>
+<td style="font-weight:600;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--g500);color:var(--w);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">SR</div>Suresh Rajan</td>
+<td style="color:var(--g500)">suresh@thulirfze.com</td>
+<td><span class="role-badge role-user">User</span></td>
+<td><span class="role-badge role-user">Active</span></td>
+<td><button class="action-btn" title="Edit"><i class="fas fa-pen"></i></button></td>
+</tr>
+<tr>
+<td style="font-weight:600;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:var(--g500);color:var(--w);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">FM</div>Fatima Mahmoud</td>
+<td style="color:var(--g500)">fatima@thulirfze.com</td>
+<td><span class="role-badge role-viewer">Viewer</span></td>
+<td><span class="role-badge role-viewer">Active</span></td>
+<td><button class="action-btn" title="Edit"><i class="fas fa-pen"></i></button></td>
+</tr>
+</tbody>
+</table>
+<button class="add-user-btn" onclick="showToast('Add user form would open here')"><i class="fas fa-plus"></i> Add New User</button>
+</div>
+<div class="card">
+<div class="section-title"><i class="fas fa-shield-alt"></i> Permission Matrix</div>
+<table class="user-table">
+<thead><tr><th>Permission</th><th style="text-align:center">Admin</th><th style="text-align:center">Manager</th><th style="text-align:center">User</th><th style="text-align:center">Viewer</th></tr></thead>
+<tbody>
+<tr><td>Create Projects</td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td></tr>
+<tr><td>Create Invoices</td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td></tr>
+<tr><td>Record Payments</td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td></tr>
+<tr><td>View Reports</td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td></tr>
+<tr><td>Manage Settings</td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td></tr>
+<tr><td>Manage Users</td><td style="text-align:center;color:var(--fg)"><i class="fas fa-check"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td><td style="text-align:center;color:var(--g500)"><i class="fas fa-times"></i></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- SYSTEM SETTINGS -->
+<div class="stab-content" id="stab-system">
+<div class="card">
+<div class="section-title"><i class="fas fa-globe"></i> Regional Settings</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Currency</label><select class="form-select" id="sCurrency"><option value="AED" selected>AED - UAE Dirham</option><option value="INR">INR - Indian Rupee</option><option value="SAR">SAR - Saudi Riyal</option><option value="OMR">OMR - Omani Rial</option><option value="USD">USD - US Dollar</option></select></div>
+<div class="form-group"><label class="form-label">Date Format</label><select class="form-select" id="sDateFormat"><option value="DD/MM/YYYY" selected>DD/MM/YYYY</option><option value="MM/DD/YYYY">MM/DD/YYYY</option><option value="YYYY-MM-DD">YYYY-MM-DD</option></select></div>
+<div class="form-group"><label class="form-label">Time Zone</label><select class="form-select" id="sTimezone"><option selected>Gulf Standard Time (GST, UTC+4)</option><option>India Standard Time (IST, UTC+5:30)</option><option>Arabia Standard Time (AST, UTC+3)</option></select></div>
+<div class="form-group"><label class="form-label">Financial Year Start</label><select class="form-select" id="sFYStart"><option value="04" selected>April</option><option value="01">January</option><option value="07">July</option></select></div>
+</div>
+</div>
+<div class="card">
+<div class="section-title"><i class="fas fa-palette"></i> Appearance</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">Language</label><select class="form-select" id="sLanguage"><option value="en" selected>English</option><option value="ar">العربية (Arabic)</option></select></div>
+<div class="form-group"><label class="form-label">Font Size</label><select class="form-select" id="sFontSize"><option value="small">Small</option><option value="medium" selected>Medium</option><option value="large">Large</option></select></div>
+</div>
+</div>
+<div class="card">
+<div class="section-title"><i class="fas fa-bell"></i> Notifications</div>
+<div style="max-width:500px">
+<div class="toggle-row"><div class="toggle-label"><span>Email on new invoice</span><span>Receive email when an invoice is created</span></div><div class="toggle-switch on" onclick="this.classList.toggle('on')"></div></div>
+<div class="toggle-row"><div class="toggle-label"><span>Email on payment received</span><span>Notify when client payment is recorded</span></div><div class="toggle-switch on" onclick="this.classList.toggle('on')"></div></div>
+<div class="toggle-row"><div class="toggle-label"><span>Low stock alerts</span><span>Alert when vendor balance is high</span></div><div class="toggle-switch" onclick="this.classList.toggle('on')"></div></div>
+<div class="toggle-row"><div class="toggle-label"><span>Monthly summary report</span><span>Auto-send monthly financial summary</span></div><div class="toggle-switch on" onclick="this.classList.toggle('on')"></div></div>
+<div class="toggle-row"><div class="toggle-label"><span>Dark mode</span><span>Switch to dark theme</span></div><div class="toggle-switch" onclick="this.classList.toggle('on')"></div></div>
+</div>
+</div>
+</div>
+
+<!-- EMAIL TEMPLATES -->
+<div class="stab-content" id="stab-email">
+<div class="card" style="margin-bottom:16px">
+<div class="section-title"><i class="fas fa-info-circle"></i> Email Configuration</div>
+<div class="form-grid">
+<div class="form-group"><label class="form-label">From Name</label><input type="text" class="form-input" id="eFromName" value="THULIR Design & QS Services FZE"></div>
+<div class="form-group"><label class="form-label">From Email</label><input type="email" class="form-input" id="eFromEmail" value="accounts@thulirfze.com"></div>
+<div class="form-group full"><label class="form-label">SMTP Server <small>(Configure in backend for sending)</small></label><input type="text" class="form-input" value="smtp.thulirfze.com" disabled style="background:var(--g50);color:var(--g500)"></div>
+</div>
+</div>
+
+<div class="section-title"><i class="fas fa-envelope-open-text"></i> Email Templates</div>
+<div class="template-card active" onclick="selectTemplate(this,0)">
+<div class="template-name"><i class="fas fa-file-invoice-dollar" style="color:var(--fg);margin-right:6px"></i>Invoice Email Template</div>
+<div class="template-desc">Sent to clients when an invoice is created or sent</div>
+<div class="template-preview">Dear [Client Name],
+
+Please find attached invoice [Invoice No.] for [Project Name].
+
+Amount Due: [Total Amount]
+Due Date: [Due Date]
+
+Payment can be made via bank transfer to the account details below.
+
+Thank you for your business.
+
+Best regards,
+THULIR Design & QS Services FZE</div>
+
+</div>
+<div class="template-card" onclick="selectTemplate(this,1)">
+<div class="template-name"><i class="fas fa-file-alt" style="color:var(--blue);margin-right:6px"></i>Quotation Email Template</div>
+<div class="template-desc">Sent to clients when a quotation is submitted for approval</div>
+<div class="template-preview">Dear [Client Name],
+
+Thank you for your inquiry. Please find attached our quotation [Quotation No.] for [Project Name].
+
+Quotation Validity: [Validity Period]
+Total Amount: [Total Amount]
+
+We look forward to your favorable response.
+
+Best regards,
+THULIR Design & QS Services FZE</div>
+
+</div>
+<div class="template-card" onclick="selectTemplate(this,2)">
+<div class="template-name"><i class="fas fa-money-check-alt" style="color:var(--orange);margin-right:6px"></i>Payment Receipt Template</div>
+<div class="template-desc">Sent to clients as payment confirmation</div>
+<div class="template-preview">Dear [Client Name],
+
+This is to confirm that we have received payment of [Amount] from you against [Invoice No.] for [Project Name].
+
+Transaction Reference: [Payment Ref]
+Date: [Payment Date]
+Mode: [Payment Mode]
+
+Thank you for your prompt payment.
+
+Best regards,
+THULIR Design & QS Services FZE</div>
+
+</div>
+<div class="template-card" onclick="selectTemplate(this,3)">
+<div class="template-name"><i class="fas fa-bell" style="color:var(--purple);margin-right:6px"></i>Payment Reminder Template</div>
+<div class="template-desc">Sent to clients for outstanding payment follow-up</div>
+<div class="template-preview">Dear [Client Name],
+
+This is a gentle reminder that the payment of [Outstanding Amount] for [Invoice No.] is due on [Due Date].
+
+If payment has already been made, please disregard this notice.
+
+Best regards,
+THULIR Design & QS Services FZE</div>
+
+</div>
+<div style="margin-top:16px;padding:16px;background:var(--g50);border-radius:8px;border:1px solid var(--g200)">
+<div style="font-size:13px;color:var(--g500);line-height:1.6"><i class="fas fa-lightbulb" style="color:var(--orange);margin-right:6px"></i>
+<strong>Note:</strong> Email templates are currently displayed for preview. Actual email sending requires SMTP server configuration in the backend. You can edit templates above to customize the content.
+Variables in [brackets] will be auto-replaced with actual data when emails are sent.</div>
+</div>
+</div>
+</div>
+
+</main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toastEl"></div>
+
+<script>
+// ── SIDEBAR ──
+const sidebar=document.getElementById('sidebar'),mobileToggle=document.getElementById('mobileToggle'),overlay=document.getElementById('sidebarOverlay');
+mobileToggle.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('active')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('active')});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',e=>{document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));e.currentTarget.classList.add('active');if(window.innerWidth<=768){sidebar.classList.remove('open');overlay.classList.remove('active')}})});
+
+// ── SETTINGS TABS ──
+document.querySelectorAll('.stab').forEach(tab=>{
+tab.addEventListener('click',()=>{
+document.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.stab-content').forEach(c=>c.classList.remove('active'));
+tab.classList.add('active');
+document.getElementById('stab-'+tab.dataset.stab).classList.add('active');
+});
+});
+
+// ── LOGO UPLOAD ──
+function handleLogo(input){
+const file=input.files[0];
+if(!file)return;
+const reader=new FileReader();
+reader.onload=function(e){
+document.getElementById('logoPreview').innerHTML='<img src="'+e.target.result+'" alt="Logo">';
+document.querySelectorAll('.preview-header img').forEach(img=>{img.src=e.target.result});
+};
+reader.readAsDataURL(file);
+showToast('Logo updated successfully');
+}
+
+// ── LIVE PREVIEW UPDATE ──
+function updatePreview(){
+document.getElementById('prevName').textContent=document.getElementById('sCompanyName').value;
+document.getElementById('prevSub').textContent=document.getElementById('sTradeName').value+' — Construction Design & QS Services';
+document.getElementById('prevAddr').textContent=document.getElementById('sAddress').value;
+document.getElementById('prevEmail').textContent=document.getElementById('sEmail').value;
+document.getElementById('prevPhone').textContent=document.getElementById('sPhone').value;
+document.getElementById('prevTRN').textContent=document.getElementById('sTRN').value;
+document.getElementById('prevWeb').textContent=document.getElementById('sWebsite').value;
+}
+
+['sCompanyName','sTradeName','sAddress','sEmail','sPhone','sMobile','sWebsite','sTRN'].forEach(id=>{
+document.getElementById(id).addEventListener('input',updatePreview);
+});
+
+// ── EMAIL TEMPLATES ──
+function selectTemplate(el,idx){
+document.querySelectorAll('.template-card').forEach(c=>c.classList.remove('active'));
+el.classList.add('active');
+}
+
+// ── SAVE ALL ──
+document.getElementById('saveAllBtn').addEventListener('click',()=>{
+// Simulate saving
+const settings={
+company:{name:document.getElementById('sCompanyName').value,tradeName:document.getElementById('sTradeName').value,type:document.getElementById('sCompanyType').value,license:document.getElementById('sLicense').value,address:document.getElementById('sAddress').value,city:document.getElementById('sCity').value,country:document.getElementById('sCountry').value,email:document.getElementById('sEmail').value,phone:document.getElementById('sPhone').value,mobile:document.getElementById('sMobile').value,website:document.getElementById('sWebsite').value,trn:document.getElementById('sTRN').value},
+invoice:{qPrefix:document.getElementById('qPrefix').value,qStart:document.getElementById('qStart').value,qDigits:document.getElementById('qDigits').value,iPrefix:document.getElementById('iPrefix').value,iStart:document.getElementById('iStart').value,iDigits:document.getElementById('iDigits').value,rPrefix:document.getElementById('rPrefix').value,rStart:document.getElementById('rStart').value,vatStatus:document.getElementById('sVatStatus').value,vatRate:document.getElementById('sVatRate').value,vatLabel:document.getElementById('sVatLabel').value,invNotes:document.getElementById('sInvNotes').value},
+payment:{pPrefix:document.getElementById('pPrefix').value,pStart:document.getElementById('pStart').value},
+system:{currency:document.getElementById('sCurrency').value,dateFormat:document.getElementById('sDateFormat').value,timezone:document.getElementById('sTimezone').value,fyStart:document.getElementById('sFYStart').value,language:document.getElementById('sLanguage').value,fontSize:document.getElementById('sFontSize').value},
+email:{fromName:document.getElementById('eFromName').value,fromEmail:document.getElementById('eFromEmail').value}
+};
+localStorage.setItem('tdqs_settings',JSON.stringify(settings));
+showToast('All settings saved successfully');
+});
+
+// ── LOAD SAVED SETTINGS ──
+(function loadSettings(){
+try{
+const s=JSON.parse(localStorage.getItem('tdqs_settings'));
+if(s){
+if(s.company){
+document.getElementById('sCompanyName').value=s.company.name||'';
+document.getElementById('sTradeName').value=s.company.tradeName||'';
+document.getElementById('sCompanyType').value=s.company.type||'FZE - Free Zone Establishment';
+document.getElementById('sLicense').value=s.company.license||'';
+document.getElementById('sAddress').value=s.company.address||'';
+document.getElementById('sCity').value=s.company.city||'';
+document.getElementById('sCountry').value=s.company.country||'UAE';
+document.getElementById('sEmail').value=s.company.email||'';
+document.getElementById('sPhone').value=s.company.phone||'';
+document.getElementById('sMobile').value=s.company.mobile||'';
+document.getElementById('sWebsite').value=s.company.website||'';
+document.getElementById('sTRN').value=s.company.trn||'';
+updatePreview();
+}
+if(s.invoice){
+document.getElementById('qPrefix').value=s.invoice.qPrefix||'QT-';
+document.getElementById('qStart').value=s.invoice.qStart||11;
+document.getElementById('qDigits').value=s.invoice.qDigits||'3';
+document.getElementById('iPrefix').value=s.invoice.iPrefix||'INV-';
+document.getElementById('iStart').value=s.invoice.iStart||11;
+document.getElementById('iDigits').value=s.invoice.iDigits||'3';
+document.getElementById('rPrefix').value=s.invoice.rPrefix||'RCT-';
+document.getElementById('rStart').value=s.invoice.rStart||9;
+document.getElementById('sVatStatus').value=s.invoice.vatStatus||'registered';
+document.getElementById('sVatRate').value=s.invoice.vatRate||5;
+document.getElementById('sVatLabel').value=s.invoice.vatLabel||'VAT';
+document.getElementById('sInvNotes').value=s.invoice.invNotes||'';
+document.getElementById('pPrefix').value=s.payment.pPrefix||'PAY-';
+document.getElementById('pStart').value=s.payment.pStart||12;
+}
+if(s.system){
+document.getElementById('sCurrency').value=s.system.currency||'AED';
+document.getElementById('sDateFormat').value=s.system.dateFormat||'DD/MM/YYYY';
+document.getElementById('sTimezone').value=s.system.timezone||'GST';
+document.getElementById('sFYStart').value=s.system.fyStart||'04';
+document.getElementById('sLanguage').value=s.system.language||'en';
+document.getElementById('sFontSize').value=s.system.fontSize||'medium';
+}
+if(s.email){
+document.getElementById('eFromName').value=s.email.fromName||'';
+document.getElementById('eFromEmail').value=s.email.fromEmail||'';
+}
+}catch(e){console.log('Settings loaded from defaults')}
+})();
+
+// ── TOAST ──
+function showToast(msg,type='success'){
+const el=document.getElementById('toastEl');
+el.textContent=msg;el.className='toast toast-'+type;
+el.style.transform='translateX(-50%) translateY(80px)';
+setTimeout(()=>el.classList.add('show'),10);
+setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.style.transform='translateX(-50%) translateY(80px)',300)},3000);
+}
+</script>
+</body>
+</html>
