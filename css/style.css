@@ -275,51 +275,77 @@ td { color: var(--gray-900); }
     .kpi-grid, .sub-kpi-grid { grid-template-columns: 1fr; }
 }
 
-/* Outstanding Receivable / Payable Table Fix */
-#toggle-receivable table th:first-child,
-#toggle-receivable table td:first-child,
-#toggle-payable table th:first-child,
-#toggle-payable table td:first-child {
-    width:60%;
-    text-align:left;
-}
-
-#toggle-receivable table th:last-child,
-#toggle-receivable table td:last-child,
-#toggle-payable table th:last-child,
-#toggle-payable table td:last-child {
-    width:40%;
-    text-align:right;
-}
+/* ==============================
+   Outstanding Receivable / Payable Fix
+   ============================== */
 
 #toggle-receivable table,
 #toggle-payable table {
-    table-layout:fixed;
+    table-layout: fixed;
+}
+
+#toggle-receivable th:first-child,
+#toggle-receivable td:first-child,
+#toggle-payable th:first-child,
+#toggle-payable td:first-child {
+    width: 65%;
+    text-align: left;
+}
+
+#toggle-receivable th:last-child,
+#toggle-receivable td:last-child,
+#toggle-payable th:last-child,
+#toggle-payable td:last-child {
+    width: 35%;
+    text-align: right;
 }
 
 #toggle-receivable th,
 #toggle-receivable td,
 #toggle-payable th,
 #toggle-payable td {
-    padding:10px 16px;
+    padding: 10px 16px;
 }
 
+/* ==============================
+   Sidebar Logo Fix
+   ============================== */
 
 .sidebar-logo {
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:20px;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    gap: 12px;
+    white-space: nowrap;
 }
 
 .sidebar-logo-img {
-    width:38px;
-    height:38px;
-    object-fit:contain;
-    border-radius:6px;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    border-radius: 4px;
+    flex-shrink: 0;
 }
 
+/* Hide text when sidebar collapsed */
+
 .sidebar-logo span {
-    font-weight:700;
-    font-size:16px;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.1s;
+}
+
+/* Show text on hover */
+
+.sidebar:hover .sidebar-logo span {
+    opacity: 1;
+}
+
+/* Remove old hardhat icon styling */
+
+.sidebar-logo i {
+    display: none;
 }
